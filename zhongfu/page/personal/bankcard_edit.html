@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="msapplication-tap-highlight" content="no"/>
+<meta name="format-detection" content="telephone=no" />
+<title>银行卡管理</title>
+<link rel="stylesheet" href="../../resource/iconFont/ui/style.css" type="text/css" />
+<link rel="stylesheet" href="../../resource/iconFont/bank/style.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal/bankcard.css" type="text/css" />
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/jquery/3.1.1.min.js"></script>
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/md5.js"></script>
+<script type="text/javascript" src="../../js/personal.js"></script>
+<script type="text/javascript" src="../../js/ajax.js"></script>
+
+</head>
+
+<body>
+	<div id="layout_fixedTop" class="layout_fixedTop">
+		<div id="tool" class="tool">
+			<a href="./bankcard.html" class="left icon-left"></a> 
+			<a href="./bankcard_add.html" class="right icon-add_2"></a>
+			<h1></h1>
+		</div>
+	</div>
+	<div id="editBox" class="edit" style="padding:0 10px;">
+		<div id="cardBox" class="cardBox">
+			<div class="icon"></div>
+			<dl class="text"><dt></dt><dd></dd></dl>
+		</div>
+		<div class="button" style="margin-top:30px;">
+			<div>
+				<button class="correct">用此卡充值</button>
+				<button id="defaultBnakCard" class="warning" onclick="defaultBnakCard(this)">设置为默认卡</button>
+				<button id="boundBankCardRemove" class="error" onclick="boundBankCardRemove(this)">删除此卡</button>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		/** 获取用户数据 */
+		var userData = JSON.parse(getCookie("_userCenterInfo"));
+		/** 获取银行卡数据 */
+		var backData = userData.bankCardList[$_GET["key"]];
+		//console.log(backData);
+		/**
+		@获取验证码
+		*/
+		function defaultBnakCard(ts){
+			if($(ts).hasClass("disable")){return;}
+			$(ts).addClass("disable").html("正在设置，请稍候");
+			var toData={
+		        command:"defaultBnakCard",
+		        bizParams:{
+		        	phone:userData.phone,
+		        	id:backData.id
+		        }
+		    };
+		    toData.MD5=utf8_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+		    ajax.interactive("POST",toData,"defaultBnakCardSuccess","defaultBnakCardError");
+		}
+		//成功
+		function defaultBnakCardSuccess(data){
+			if(data.code=="0000"){
+				$("#defaultBnakCard").addClass("disable").html("已设置为默认卡");
+			}else{
+				$("#defaultBnakCard").removeClass("disable").html("设置为默认卡");
+			}
+		}
+		//失败
+		function defaultBnakCardError(data){
+			console.log(data);
+		}
+
+		/**
+		@删除银行卡
+		*/
+		function boundBankCardRemove(ts){
+			if($(ts).hasClass("disable")){return;}
+			$(ts).addClass("disable").html("正在删除，请稍候");
+			var toData={
+		        command:"boundBankCardRemove",
+		        bizParams:{
+		        	id:backData.id
+		        }
+		    };
+		    toData.MD5=utf8_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+		    ajax.interactive("POST",toData,"boundBankCardRemoveSuccess","boundBankCardRemoveError");
+		}
+		//成功
+		function boundBankCardRemoveSuccess(data){
+			if(data.code=="0000"){
+				window.location.href="./bankcard.html";
+			}else{
+				$("#boundBankCardRemove").removeClass("disable").html("删除此卡");
+			}
+		}
+		//失败
+		function boundBankCardRemoveError(data){
+			console.log(data);
+		}
+		
+		
+		
+		/*** 执行 **********************************************************************************/
+		$(function(){
+			/** 编译LESS **********************************************/
+
+            $.get("../../../../tool/apiY.php", { api: "lessphp",less:"lottery_mob/less/personal/bankcard.less",css:"lottery_mob/css/personal/bankcard.css"});
+			//$.get("../../../../tool/api.php", { api: "lessphp",less:"Terminal/less/personal/bankcard.less",css:"Terminal/css/personal/bankcard.css"});
+			//初始化设置
+			$("#tool>h1").text("银行卡管理");
+			$("#editBox").css({paddingTop:($("#layout_fixedTop").outerHeight()+0)+"px"});
+
+			
+			$("#cardBox>.icon").addClass("bank-"+backData["shortbank"]);
+			$("#cardBox>dl.text>dt").text(backData["cardName"]);
+			$("#cardBox>dl.text>dd").text(backData["bankNum"].replace(r_kahao, "$1 **** **** $2"));
+
+		});
+	</script>
+</body>
+</html>

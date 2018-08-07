@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="msapplication-tap-highlight" content="no"/>
+<meta name="format-detection" content="telephone=no" />
+<title>银行卡管理</title>
+<link rel="stylesheet" href="../../resource/iconFont/ui/style.css" type="text/css" />
+<link rel="stylesheet" href="../../resource/iconFont/bank/style.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal/bankcard.css" type="text/css" />
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/jquery/3.1.1.min.js"></script>
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/md5.js"></script>
+<script type="text/javascript" src="../../js/personal.js"></script>
+<script type="text/javascript" src="../../js/ajax.js"></script>
+
+</head>
+
+<body>
+	<div id="layout_fixedTop" class="layout_fixedTop">
+		<div id="tool" class="tool">
+			<a href="./index.html" class="left icon-left"></a> 
+			<a href="./bankcard_add.html" class="right icon-add_2"></a>
+			<h1></h1>
+		</div>
+	</div>
+	<div id="bankListBox" class="bankListBox"><ul></ul></div>
+	<script type="text/javascript">
+		/** 获取用户数据 */
+		delCookie("_userCenterInfo");
+		function getUserCenterInfo(data){
+			var userInfo = data["bizResult"];
+	        //储存用户信息	        
+	        setCookie("_userCenterInfo",JSON.stringify(userInfo),86400000);
+	        var userData = userInfo;
+
+		    //设置银行卡列表
+			for(var key in userData.bankCardList){
+				var backData = userData.bankCardList[key];
+				var _get = 'key='+key;
+					$("#bankListBox>ul").append('<li onclick="window.open(\'./bankcard_edit.html?'+_get+'\',\'_self\')">\
+						<div class="icon bank-'+backData.shortbank+'"></div>\
+						<dl class="text"><dt>'+backData.cardName+'</dt><dd>'+backData.bankNum.replace(r_kahao, "$1 **** **** $2")+'</dd></dl>\
+					</li>');
+			}
+		}
+		
+		/*** 执行 **********************************************************************************/
+		$(function(){
+			/** 编译LESS **********************************************/
+
+            $.get("../../../../tool/apiY.php", { api: "lessphp",less:"lottery_mob/less/personal/bankcard.less",css:"lottery_mob/css/personal/bankcard.css"});
+			//$.get("../../../../tool/api.php", { api: "lessphp",less:"Terminal/less/personal/bankcard.less",css:"Terminal/css/personal/bankcard.css"});
+			
+			/** 获取用户ID及设备信息 */
+			var deviceInfo = eval('(' + getCookie("_DeviceInfo") + ')');
+			//初始化设置
+			$("#tool>h1").text("银行卡管理");
+			$("#bankListBox").css({paddingTop:($("#layout_fixedTop").outerHeight()+0)+"px"});
+
+			/** 用户信息 ***********************************************/
+
+			var toData={
+		        command:"getUserCenterInfo",
+		        bizParams:{phone:deviceInfo.phone}
+		    };
+		    toData.MD5=hex_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+		    ajax.interactive("POST",toData,"getUserCenterInfo","");
+
+			
+		});
+	</script>
+</body>
+</html>

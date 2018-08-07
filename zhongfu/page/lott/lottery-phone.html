@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0" />
+    <meta name="msapplication-tab-highlight" content="no" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <title>用户信息</title>
+
+    <link rel="stylesheet" href="../../css/lott/userInfo.css">
+    <link rel="stylesheet" href="../../resource/iconFont/ui/style.css">
+
+    <script type="text/javascript" src="../../library/js/jquery/3.1.1.min.js"></script>
+    <script type="text/javascript" src="../../library/js/md5.js"></script>
+    <script type="text/javascript" src="../../js/methodY.js"></script>
+
+    <script src="../../js/common.js"></script>
+
+    <script>
+        //初始化rem基准值
+        common.remLayout(window);
+    </script>
+
+</head>
+<body>
+<header class="navBox clearfix">
+
+    <a href="javascript:common.backUp()" class="icon-left"></a>
+    <div><span class="title">用户信息</span></div>
+    <a href="javascript:common.backIndex('index.html')" class="icon-home"></a>
+</header>
+
+<section class="contentBox">
+    <ul id="getPhone">
+        <li class="phoneHistory">
+            <label>*号码<span class="phoneRecord"></span>,是否<a class="btn btn-primary" id="savePhoneRecord">更换</a></label>
+        </li>
+        <li>
+            <i class="icon-iphone input-icon"></i>
+            <input type="tel" class="form-control validPhone" placeholder="请输入手机号码">
+            <input type="hidden" class="validPhone">
+        </li>
+        <li>
+            <label style="color:red;">*请核对手机号码，中奖信息发送到此号码</label>
+        </li>
+        <li>
+            <button type="button" id="getPhoneBtn">确定</button>
+        </li>
+    </ul>
+    <ul id="loginReg">
+        <li>
+            <i class="icon-iphone input-icon"></i>
+            <input type="tel" id="loginTel" class="form-control validPhone" placeholder="请输入手机号码">
+        </li>
+        <li>
+            <i class="icon-password_ input-icon"></i>
+            <input type="password" id="loginPwd"  class="form-control" placeholder="请输入密码"  >
+        </li>
+        <li>
+            <button type="button" id="loginRegBtn">确定</button>
+        </li>
+    </ul>
+    <ul id="realNameInfo" >
+        <li>
+            <i class="icon-iphone input-icon"></i>
+            <input type="tel" class="form-control validPhone" id="realNameTel"  placeholder="请输入手机号码">
+        </li>
+        <li>
+            <i class="icon-m3 input-icon"></i>
+            <input type="text"  class="form-control" id="realName" placeholder="请输入真实姓名"  autocomplete="off">
+        </li>
+        <li>
+            <i class="icon-card input-icon"></i>
+            <input type="text"  class="form-control" id="realIdCard" placeholder="请输入身份证号码"  autocomplete="off" style="text-transform:uppercase;">
+        </li>
+        <li>
+            <button type="button" id="realNameInfoBtn">确定</button>
+        </li>
+    </ul>
+</section>
+
+
+<div class="modalY">
+    <div class="modalY-dialog">
+        <div class="modalY-content" style="height:20vh">
+            <div class="modalY-body" style="height:12vh;display: flex;align-items:center;justify-content:center;" >
+                <p style="font-size:18px;color:#444;">中奖信息发送到<span id="curTel"></span></p>
+            </div>
+            <div class="modalY-footer">
+
+                <button type="button" class="btn btn-default" id="telCanel">取消</button>
+                <button type="button" class="btn btn-default" id="telOk">确定</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+    methodY.loadScript('../../js/ajaxY.js',function () {
+
+        methodY.loadScript('../../js/validY.js',function () {
+            methodY.loadScript('../../js/lott/lottery-phone.js',function () {
+                userPhone.init();
+            })
+        })
+    })
+
+    $(function () {
+        $('#telCanel').click(function () {
+            $('.contentBox').attr('data-tel',false);
+            $('.modalY').hide();
+        })
+        $('#telOk').click(function () {
+            $('.contentBox').attr('data-tel',true);
+            $('.modalY').hide();
+            methodY.openPage('lottery-payType.html');
+        })
+    })
+
+    <!-- $(function(){ -->
+        <!-- $.get("/../../tool/api.php", { -->
+            <!-- api: "lessphp", -->
+            <!-- less: "lottery_mob/less/lott/userInfo.less", -->
+            <!-- css: "lottery_mob/css/lott/userInfo.css" -->
+        <!-- }); -->
+    <!-- }) -->
+</script>
+</body>
+</html>

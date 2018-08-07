@@ -1,0 +1,43 @@
+
+{
+	"photo":[
+		{
+			"name":"交易记录",
+			"child":[
+				{"name":"充值记录","icon":"icon-m1","link":"./transaction.html?type=recharge","msg":0},
+				{"name":"提现记录","icon":"icon-m2","link":"#2","msg":0},
+				{"name":"彩金转入记录","icon":"icon-m3","link":"#","msg":0},
+				{"name":"商品兑换记录","icon":"icon-m4","link":"#","msg":0}
+			]
+		},
+		{
+			"name":"账户&安全",
+			"child":[
+				{"name":"安全中心","icon":"icon-m5","link":"#","msg":0},
+				{"name":"银行卡管理","icon":"icon-m6","link":"#","msg":0},
+				{"name":"返奖说明","icon":"icon-as1-04","link":"#","msg":0}
+
+			]
+		}
+	],
+	"poss":[
+		{
+			"name":"交易记录",
+			"child":[
+				{"name":"最近消费","icon":"icon-as1-03","link":"./transaction.html?type=recent","msg":0},
+				{"name":"彩票交易记录","icon":"icon-as1-01","link":"./transaction.html?type=lottery","msg":0},
+				{"name":"账户交易记录","icon":"icon-as1-02","link":"./transaction.html?type=account","msg":0},
+				{"name":"返利","icon":"icon-Integral","link":"./transaction.html?type=benefit","msg":0},
+				{"name":"购彩金","icon":"icon-as1-03","link":"./transaction.html?type=lotterymoney","msg":0}
+			]
+		},
+		{
+			"name":"账户&安全",
+			"child":[
+				{"name":"安全中心","icon":"icon-m5","link":"./security.html?type=index","msg":0},
+				{"name":"银行卡管理","icon":"icon-m6","link":"./bankcard.html?type=index","msg":0},
+				{"name":"返奖方式管理","icon":"icon-as1-04","link":"./award.html?type=index","msg":0}
+			]
+		}
+	]
+}

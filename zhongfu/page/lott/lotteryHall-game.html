@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" charset="utf-8">
+    <meta name="viewport" content="target-densitydpi=320,width=640,user-scalable=no" />
+    <meta name="msapplication-tap-highlight" content="no"/>
+    <meta name="format-detection" content="telephone=no" />
+    <title>华善科技</title>
+    <link rel="stylesheet" type="text/css" href="../../css/index.css"/>
+    <link rel="stylesheet" href="../../resource/iconFont/ui/style.css" type="text/css">
+    <link rel="stylesheet" href="../../css/lott/style.css" type="text/css" />
+    <script type="text/javascript" src="http://59.52.25.51:18090/library/js/jquery/3.1.1.min.js"></script>
+    <style>
+        #content a{
+            background-color: #00b300;
+        }
+    </style>
+</head>
+<body>
+
+<div id="Mian" class="Mian box_sc">
+    <div id="Navigation" class="Navigation">
+        <a id="BackOff" href="javascript:history.back(-1);"  class="left icon-left"></a>
+        <a id="BackOff" href="index.html" class="right icon-home"></a>
+        <div>游戏大厅</div>
+
+    </div>
+
+    <section id="content">
+        <div id="lott">
+            <a href="http://19500.wicp.net:62498/dice/index.html">
+                <img src="../../resource/images/lott/dice.png" />
+                <div>
+                    <h2>骰盅</h2>
+                </div>
+            </a>
+            <a href="http://19500.wicp.net:62498/ahf/index.html">
+                <img src="../../resource/images/lott/flsxc.png" />
+                <div>
+                    <h2>福禄寿喜财</h2>
+                </div>
+            </a>
+
+
+        </div>
+        <div class="footer_mask" style="position:fixed;bottom:0;width:100%;">
+            <span>福利彩票合作运营单位：华善科技发展有限公司</span>
+        </div>
+    </section>
+
+</div>
+<script>
+    $(function(){
+
+        $("#lott").find("a:eq(2),a:eq(4),a:eq(5)").click(function(){
+            $(this).addClass("bakcgroung33");
+        });
+
+    })
+</script>
+</body>
+</html>

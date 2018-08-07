@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0" />
+    <meta name="msapplication-tab-highlight" content="no" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <title>中国福利彩票</title>
+
+    <link rel="stylesheet" href="../../css/lott/index.css">
+    <link rel="stylesheet" href="../../resource/iconFont/ui/style.css">
+
+    <script src='../../library/js/jquery/3.1.1.min.js' type="text/javascript"></script>
+
+    <!--<script src="../../js/methodY.js"></script>-->
+
+    <script>
+        (function(win) {
+            var remCalc = {};
+            var docEl = win.document.documentElement,
+                tid;
+            function refreshRem() {
+                // 获取当前窗口的宽度
+                var width = docEl.getBoundingClientRect().width;
+                // 大于640px 按640算
+                if (width > 640) { width = 640 }
+                var rem = width / 10;  // cms 只要把这行改成  var rem = width /640 * 100
+                docEl.style.fontSize = rem + "px";
+                remCalc.rem = rem;
+                //误差、兼容性处理
+                var actualSize = parseFloat(window.getComputedStyle(document.documentElement)["font-size"]);
+                if (actualSize !== rem && actualSize > 0 && Math.abs(actualSize - rem) > 1) {
+                    var remScaled = rem * rem / actualSize;
+                    docEl.style.fontSize = remScaled + "px"
+                }
+            }
+            //函数节流，避免频繁更新
+            function dbcRefresh() {
+                clearTimeout(tid);
+                tid = setTimeout(refreshRem, 100)
+            }
+
+            //窗口更新动态改变font-size
+            win.addEventListener("resize", function() { dbcRefresh() }, false);
+
+            //页面显示的时候再计算一次   难道切换窗口之后再切换来窗口大小会变?....
+            win.addEventListener("pageshow", function(e) {
+                if (e.persisted) { dbcRefresh() }
+            }, false);
+            refreshRem();
+            remCalc.refreshRem = refreshRem;
+            remCalc.rem2px = function(d) {
+                var val = parseFloat(d) * this.rem;
+                if (typeof d === "string" && d.match(/rem$/)) { val += "px" }
+                return val
+            };
+            remCalc.px2rem = function(d) {
+                var val = parseFloat(d) / this.rem;
+                if (typeof d === "string" && d.match(/px$/)) { val += "rem" }
+                return val
+            };
+            win.remCalc = remCalc
+        })(window);
+    </script>
+</head>
+<body>
+    <header class="navBox clearfix">
+        <a href="../login/login.html" class="icon-My_"></a>
+        <div><span class="title">中国福利彩票</span></div>
+        <a href="javascript:void(0)" class=""></a>
+    </header>
+    <section class="contentBox">
+        <ul class="lottType clearfix">
+            <li><a href="ssq/lottery-ssq.html"><img src="../../resource/images/lott/ssq.png" alt=""></a></li>
+            <li><a href="qlc/lottery-qlc.html"><img src="../../resource/images/lott/qlc.png" alt=""></a></li>
+            <li><a href="3d/lottery-3d.html"><img src="../../resource/images/lott/3d.png" alt=""></a></li>
+            <li class="waitIcon"><a href="javascript:void(0)"><img src="../../resource/images/lott/k3.png" alt=""></a></li>
+            <li class="waitIcon">
+                <a href="javascript:void(0)"><img src="../../resource/images/lott/15_5.png" alt=""></a>
+            </li>
+            <li class="waitIcon">
+                <a href="javascript:void(0)"><img src="../../resource/images/lott/df6_1.png" alt=""></a>
+            </li>
+        </ul>
+    </section>
+    <footer class="footerBox">
+        <p>
+            <span>福利彩票合作运营单位：华夏鑫彩科技有限公司</span>
+        </p>
+    </footer>
+
+    <script>
+        $(function(){
+            $.get("/../../tool/api2.0.php", {
+                api: "lessphp",
+                less: "lottery_SH/less/lott/index.less",
+                css: "lottery_SH/css/lott/index.css"
+            });
+
+            localStorage.removeItem('deviceId');
+            localStorage.removeItem('deviceInfo');
+            //localStorage.removeItem('phoneLott');
+        })
+    </script>
+</body>
+</html>

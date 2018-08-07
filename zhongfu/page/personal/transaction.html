@@ -1,0 +1,506 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+	<meta name="msapplication-tap-highlight" content="no"/>
+	<meta name="format-detection" content="telephone=no" />
+	<title>交易记录</title>
+	<link rel="stylesheet" href="../../resource/iconFont/ui/style.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/personal.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/personal/transaction.css" type="text/css" />
+	<script type="text/javascript" src="http://59.52.25.51:18090/library/js/jquery/3.1.1.min.js"></script>
+	<script type="text/javascript" src="http://59.52.25.51:18090/library/js/md5.js"></script>
+	<script type="text/javascript" src="../../js/personal.js"></script>
+	<script type="text/javascript" src="../../js/ajax.js"></script>
+
+</head>
+
+<body>
+<div id="topBox" class="layout_fixedTop">
+	<div id="tool" class="tool">
+		<a href="javascript:history.go(-1);" class="left icon-left"></a>
+		<!--<a href="javascript:pop('choiceDate',{name:'选择开始时间'});" class="right icon-as1-05"></a>-->
+		<h1></h1>
+	</div>
+	<ul id="navBox" class="nav"></ul>
+</div>
+
+<div id="listBox" class="listBox"><div class="loading"><div style="padding-bottom:10px;"><img src="../../resource/images/loading.gif" /></div><span>正在加载，请稍候</span></div><ul></ul></div>
+
+<script type="text/javascript">
+    /** 获取用户ID及设备信息 */
+    var deviceInfo = eval('(' + getCookie("_DeviceInfo") + ')') || {};
+
+    //彩种、玩法
+    var lottType={
+        'ssq':{
+            '11':'单式',
+            '12':'复式',
+            '15':'胆拖',
+        },
+        'qlc':{
+            '11':'直选单式',
+            '12':'直选复式',
+            '15':'胆拖'
+        },
+        '3d':{
+            '11':'直选单式',
+            '12':'直选复式',
+            '21':'组选',
+            '83':'组三包号',
+            '84':'组六包号'
+        },
+        'K3':{
+            '11':'三不同单式',
+            '12':'二同单式',
+            '13':'三同单式',
+            '15':'和值',
+            '16':'二不同复选',
+            '17':'二同复选',
+            '18':'三同号通选',
+            '19':'三不同号通选',
+            '111':'三不同复式',
+        }
+    }
+
+    /** 设置相关数据 **********************************************/
+    var obj=getInfo('detail');//彩票详情相关信息
+    var pageName="",//页面名称
+        navList=[],//导航栏
+        ajaxParameter={}//接口名称及相关入参
+    callback="";//回调方法名
+	var flag=true;//新、旧接口
+	/*导航菜单&数据请求*/
+    switch($_GET["type"]){
+        case "recharge"://充值记录
+            pageName="充值记录";
+            navList=[
+                {name:"全部",type:"all",link:"#"},
+                {name:"近一周",type:"week",link:"#"},
+                {name:"近一月",type:"months",link:"#"},
+                {name:"A一月",type:"months",link:"#"},
+                {name:"B一月",type:"months",link:"#"}
+            ];
+            break;
+        case "recent"://近期交易记录
+            pageName="最近消费";
+            callback="queryFrontInfo";
+            navList=[{name:"近30天的记录",type:"all",link:"javascript:void(0);"}];
+            var newData = getNowFormatDate();
+            ajaxParameter.command="queryFrontInfo";
+            ajaxParameter.bizParams={
+                userName:deviceInfo.phone,
+                startDate:getNowFormatDate(newData.timestamp-(86400*30)).date,
+                endDate:newData.date
+            };
+            ajaxParameter.MD5=hex_md5(configure.secretKey+JSON.stringify(ajaxParameter.bizParams));
+            break;
+        case "lottery"://彩票交易记录
+            pageName="彩票交易记录";
+            callback="queryBizLotteryOrder";
+            navList=[
+                {name:"全部",type:"all",link:"#"},
+                {name:"中奖",type:"winninw",link:"#"},
+                {name:"待开奖",type:"waitLotto",link:"#"},
+                {name:"追号",type:"follow",link:"#"}
+            ];
+            var newData = getNowFormatDate();
+            ajaxParameter.command="queryLotteryOrderList";
+            ajaxParameter.bizParams={
+                type:1,
+                userName:deviceInfo.phone,
+                startDate:getNowFormatDate(newData.timestamp-(86400*90)).date,
+                endDate:newData.date,
+				pageNum:1,
+				pageSize:100
+            };
+            flag=false;
+            ajaxParameter.MD5=hex_md5(configure.secretKey+JSON.stringify(ajaxParameter.bizParams));
+            break;
+        case 'lotteryRecord':
+            pageName="彩票交易详情";
+            callback="queryBizLotteryOrderdetail";
+			flag=false;
+            navList=[
+                {name:obj.lotteryName+"<span style='display: inline-block;width:60px;'></span>"+obj.stage+"期",type:"all",link:"javascript:void(0);"},
+            ];
+            ajaxParameter.command="queryLotteryOrderDetail";
+
+            ajaxParameter.bizParams={
+                lottery_no:obj.lottery_no,
+                stage:obj.stage
+            };
+            ajaxParameter.MD5=hex_md5(configure.secretKey+JSON.stringify(ajaxParameter.bizParams));
+            break;
+        case "account"://账户交易记录
+            pageName="账户交易记录";
+            callback="withdrawCashRegister";
+            navList=[
+                {name:"近90天的记录",type:"all",link:"javascript:void(0);"}
+            ];
+            var newData = getNowFormatDate();
+            ajaxParameter.command="withdrawCashRegister";
+            ajaxParameter.bizParams={
+                phone:deviceInfo.phone,
+                startDate:getNowFormatDate(newData.timestamp-(86400*90)).date,
+                endDate:newData.date
+            };
+            ajaxParameter.MD5=hex_md5(configure.secretKey+JSON.stringify(ajaxParameter.bizParams));
+            break;
+        case "benefit"://账户返利记录
+            pageName="返利记录";
+            callback="revoladeRegister";
+            navList=[
+                {name:"近90天的记录",type:"all",link:"javascript:void(0);"}
+            ];
+            var newData = getNowFormatDate();
+            ajaxParameter.command="revoladeRegister";
+            ajaxParameter.bizParams={
+                phone:deviceInfo.phone,
+                startDate:getNowFormatDate(newData.timestamp-(86400*90)).date,
+                endDate:newData.date
+            };
+            ajaxParameter.MD5=hex_md5(configure.secretKey+JSON.stringify(ajaxParameter.bizParams));
+            break;
+        case "lotterymoney"://账户彩金交易记录
+            pageName="返利记录";
+            callback="revoladeRegister";
+            navList=[
+                {name:"近90天的记录",type:"all",link:"javascript:void(0);"}
+            ];
+            var newData = getNowFormatDate();
+            ajaxParameter.command="revoladeRegister";
+            ajaxParameter.bizParams={
+                phone:deviceInfo.phone,
+                startDate:getNowFormatDate(newData.timestamp-(86400*90)).date,
+                endDate:newData.date
+            };
+            ajaxParameter.MD5=hex_md5(configure.secretKey+JSON.stringify(ajaxParameter.bizParams));
+            break;
+    }
+
+    /*** 添加数据 **********************************************************************************/
+    //处理近期交易记录
+    function queryFrontInfo(data){
+        //console.log(data);
+        $("#listBox>div.loading").hide();//隐藏加载动画
+        for(var key in data.bizResult){
+            var liData = data.bizResult[key];
+            var html = '<li>\
+					<h3>交易时间：'+liData.orderTime+'</h3>\
+					<dl style="border-bottom:0;">\
+						<dd>订单类型：'+liData.orderType+'</dd>\
+						<dd>订单金额：<span class="income">'+liData.orderBonus+' 元</span></dd>\
+						<dd>支付方式：'+liData.payType+'</dd>\
+						<dd>订单状态：'+liData.businessStatus+'</dd>\
+					</dl>\
+				</li>';
+
+            $("#listBox>ul").append(html);
+        }
+    }
+
+    //处理彩票交易记录
+    function queryBizLotteryOrder(data){
+        //console.log(data);
+        $("#listBox>div.loading").hide();//隐藏加载动画
+        for(var key in data.bizResult){
+            var liData = data.bizResult[key];
+            var type='',winMoney="-";
+            //判断中奖情况
+            if(liData.winMoney>0){
+                winMoney=liData.winMoney+"元";
+            }else if(liData.orderStatusName=="已开奖"){
+                winMoney="未中奖";
+            }
+            //判断类型
+            if(liData.winMoney>0&&liData.orderStatusName=="已开奖"){
+                type="winninw";
+            }else if(liData.orderStatusName=="等待开奖"){
+                type="waitLotto";
+            }else if(liData.orderStatus==2){
+                type="follow";
+            }
+            var html = '<li class="'+type+'">\
+					<h3>订单时间：'+liData.insertTime+'</h3>\
+					<dl>\
+						<dd>彩 种：'+liData.lotteryName+'</dd>\
+						<dd>订单金额：<span class="income">'+liData.orderBonus+' 元</span></dd>\
+						<dd>支付方式：'+liData.payType+'</dd>\
+						<dd>订单状态：<span class="cost">'+liData.orderStatusName+'</span></dd>\
+						<dd>中奖情况：<span class="income">'+winMoney+'</span></dd>\
+					</dl>\
+					<span >查看详情>></span>\
+				</li>';
+
+            $("#listBox>ul").append(html);
+
+        }
+
+        $("#listBox>ul>li>span").click(function(){
+            var index=$(this).parent().index();
+            details(data.bizResult[index]);
+        })
+    }
+
+    //解析中奖号码
+    function parsingNum(arr){
+        var attr=[];
+        $.each(arr,function(i,obj){
+            var temp={
+                type:obj.split('|')[0],
+                redPick:obj.split('|')[1],
+
+            }
+            if(obj.split('|').length>2){
+                temp['bluePick']=obj.split('|')[2]
+            }
+            attr.push(temp);
+        })
+        return attr;
+    }
+    //彩票详情
+    function queryBizLotteryOrderdetail(data){
+        console.log(obj);
+        var data=data.bizResult;
+        $("#listBox>div.loading").hide();//隐藏加载动画
+        var lotterInfo=data.lotteryNumber.split(';');
+
+        var amount=lotterInfo[0].split('^')[4];
+
+
+        var $li=$("<li><h3>选号详情<span style='float:right'>"+obj.insertTime+"</span></h3></li>");
+        var $dl=$("<dl></dl>");
+        var openLotter=data.openlotteryNumber.split('');
+        openLotter.length>0 && openLotter.splice(openLotter.indexOf('#'),1,'|');
+
+        var temp=openLotter.join('')
+
+        var $html=$("<dd>投注金额：<span>"+(obj.payBonus)+"元</span></dd>" +
+            "<dd>中奖金额：<span>"+(data.awardBonus)+"元</span></dd>" +
+            "<dd>投注信息：<span>"+(obj.payBonus/2)+"注</span>，<span>"+amount+"倍</span></dd>" +
+            "<dd>开奖号码：<span>"+(data.openlotteryNumber || data.orderStatusName || obj.orderStatusName)+"</span></dd>");
+
+        $html.appendTo($dl);
+        $dd=$("<dd>投注号码：</dd>");
+        $ul=$("<ul></ul>");
+
+        $.each(data.lotteryNumber.split(';'),function(i,obj){
+            if(obj){
+                var $l=$("<li><span>"+lottType[data.lotteryType][obj.split('^')[1]+obj.split('^')[2]]+' '+amount+'倍'+' '+obj.split('^')[0]+"</span></li>");
+                $l.appendTo($ul);
+            }
+        })
+
+
+
+        $ul.appendTo($dd);
+        $dd.appendTo($dl);
+        $li.append($dl).appendTo($("#listBox>ul"));
+
+        var btn1=$("<button style='display:block;padding:5px 8px;width:100%;margin:10px auto;text-align: center;' type='button'>补打小票</button>");
+
+        var btn2=$("<button style='display:block;padding:5px 8px;width:100%;margin:10px auto;text-align: center;' type='button'>继续投注</button>");
+
+        btn1.click(function () {
+			var toData={
+                command:"printerlog",
+                bizParams:{
+                    clientId: obj.orderNumber.substr(0,8),
+                    orderNumber: obj.orderNumber,
+                }
+			}
+            toData.MD5=hex_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+			ajax.ajaxData('post',toData,function (print) {
+				if(print.code=='0000'){
+				    popInfo('补打成功!');
+
+                    var userData = JSON.parse(getCookie("_userCenterInfo"));
+
+				    var tempData={
+                        command:"queryReceiptInfo",
+                        bizParams:{
+                            orderNumber:obj.orderNumber,
+                            phone:userData.phone
+                        }
+                    }
+                    tempData.MD5=hex_md5(configure.secretKey+JSON.stringify(tempData.bizParams));
+				    ajax.ajaxData('post',tempData,function (data) {
+                        if(data.code=='0000'){
+                            var Obj=window.Obj || null;
+                            if(Obj){
+                                popInfo('出票');
+                                var b=Obj.printInfo(JSON.stringify(data.bizResult));
+
+                            }else{
+                                popInfo('android不存在！');
+                            }
+						}else{
+                            popInfo(data.msg);
+						}
+                    })
+
+
+
+				}else{
+				    alert(print.msg);
+				}
+            })
+        })
+
+        btn2.click(function () {
+            var temp=data.lotteryNumber;
+            temp=temp.substr(0,temp.lastIndexOf(';'));
+            sessionStorage.setItem('lottery_data',JSON.stringify({
+                lotteryType:data.lotteryType,
+                lotteryNumber:temp,
+            }));
+            window.open('../lott/lottery-ok.html?type='+data.lotteryType+'&play='+data.lotteryNumber.split(';')[0].split("^")[1]+""+data.lotteryNumber.split(';')[0].split("^")[2],'_self');
+        })
+
+        btn1.appendTo($("#listBox"));
+        btn2.appendTo($("#listBox"));
+
+    }
+
+    //处理账户交易记录
+    function withdrawCashRegister(data){
+        //console.log(data);
+        $("#listBox>div.loading").hide();//隐藏加载动画
+        for(var key in data.bizResult){
+            var liData = data.bizResult[key];
+            //console.log(liData);
+            var type="";
+            switch(liData.type){
+                case "0":type="账户消费";break;
+                case "1":type="账户充值";break;
+                case "2":type="账户提现";break;
+                case "3":type="账户返奖";break;
+                case "4":type="账户返利";break;
+            }
+            var html = '<li>\
+					<h3>交易时间：'+liData.createTime+'</h3>\
+					<dl>\
+						<dd>交 易 类 型：'+type+'</dd>\
+						<dd>交 易 金 额：<span class="income">'+liData.dobnowMoney+'</span></dd>\
+						<dd>交易后余额：<span class="cost">'+liData.dobfirstMoney+'</span></dd>\
+						<dd>交 易 状 态：'+liData.status+'</dd>\
+					</dl>\
+				</li>';
+            $("#listBox>ul").append(html);
+        }
+    }
+
+    //处理返利记录
+    function revoladeRegister(data){
+        //console.log(data);
+        if(!data.bizResult){
+            $("#listBox>div.loading").hide();//隐藏加载动画
+            $("#listBox>ul").html('<li class="remind">无记录</li>');
+            return;
+        }
+    }
+
+    /*** 用户操作 **********************************************************************************/
+    //操作导航栏
+    function userNavList(name){
+//        $("#listBox>ul>li").show();
+//        if(name!="all"){$("#listBox>ul>li:not(."+name+")").hide();}
+        $("#listBox>ul").empty();
+        var callF="queryBizLotteryOrder";
+        var params={};
+        params.command="queryLotteryOrderList";
+        params.bizParams={
+            type:1,
+            userName:deviceInfo.phone,
+            startDate:getNowFormatDate(newData.timestamp-(86400*90)).date,
+            endDate:newData.date,
+            pageNum:1,
+            pageSize:100
+        };
+        flag=false;
+        switch(name){
+			case 'all':
+                params.MD5=hex_md5(configure.secretKey+JSON.stringify(params.bizParams));
+                break;
+			case 'winninw':
+			    params.bizParams.type=3;
+                params.MD5=hex_md5(configure.secretKey+JSON.stringify(params.bizParams));
+                break;
+			case 'follow':
+                params.bizParams.type=3;
+                params.MD5=hex_md5(configure.secretKey+JSON.stringify(params.bizParams));
+                break;
+			default:
+                params.MD5=hex_md5(configure.secretKey+JSON.stringify(params.bizParams));
+                break;
+		}
+        ajax.interactive("POST",params,callF,"",false);
+
+    }
+
+    //查看详情
+    function details(info){
+        console.log(info);
+        setInfo('detail',info);
+        window.open("./transaction.html?type=lotteryRecord","_self");
+//            var toData={
+//                command:"queryBizLotteryOrderdetail",
+//                bizParams:{
+//                    lottery_no: info.lottery_no,
+//                    stage: info.stage,
+//                }
+//            };
+//            toData.MD5=hex_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+//			ajax.ajaxData('post',toData ,function(data){
+//			    console.log(data)
+//
+//			});
+    }
+
+
+    /*** 执行 **********************************************************************************/
+    $(function(){
+        /** 编译LESS **********************************************/
+
+        $.get("../../../../tool/apiY.php", { api: "lessphp",less:"lottery_mob/less/personal/transaction.less",css:"lottery_mob/css/personal/transaction.css"});
+        //$.get("../../../../tool/api.php", { api: "lessphp",less:"Terminal/less/personal/transaction.less",css:"Terminal/css/personal/transaction.css"});
+        //$.get("../../../../tool/api.php", { api: "lessphp",less:"Terminal/less/plugIn.less",css:"Terminal/css/plugIn.css"});
+
+        /** 写入页面信息 **********************************************/
+        $("title,#tool>h1").text(pageName);
+
+        /** 写入导航栏 **********************************************/
+        if(navList.length>0){
+            var liW= 100/navList.length;
+            for(var key in navList){
+                var inData = navList[key];
+                $("#navBox").append('<li name="'+inData["type"]+'" style="width:'+liW+'%;">'+inData["name"]+'</li>');
+            }
+        }else{
+            $("#navBox").hide();
+        }
+        //添加切换事件
+        $("#navBox").on("click",">li",function(){
+            $("#navBox>.selected").removeClass("selected");
+            $(this).addClass("selected");
+            userNavList($(this).attr("name"));
+        });
+        //设置默认值
+        $("#navBox>li").eq(0).click();
+
+        /** 获取数据 **********************************************/
+        if(ajaxParameter.command){
+            $("#listBox>ul").html('');//清空容器
+            var loadingSize={
+                h:$("#listBox>div.loading").outerHeight(),
+                w:$("#listBox>div.loading").outerWidth(),
+            };
+            $("#listBox>div.loading").css({marginLeft:"-"+(loadingSize.w/2)+"px",marginTop:"-"+(loadingSize.h/2)+"px"}).show();//显示加载动画
+            ajax.interactive("POST",ajaxParameter,callback,"",false);
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="msapplication-tap-highlight" content="no"/>
+<meta name="format-detection" content="telephone=no" />
+<title>提现</title>
+<link rel="stylesheet" href="../../resource/iconFont/ui/style.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal/help.css" type="text/css" />
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/jquery/3.1.1.min.js"></script>
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/md5.js"></script>
+<script type="text/javascript" src="../../js/personal.js"></script>
+<script type="text/javascript" src="../../js/ajax.js"></script>
+
+</head>
+
+<body>
+	<div id="layout_fixedTop" class="layout_fixedTop">
+		<div id="tool" class="tool">
+			<a href="javascript:history.go(-1);" class="left icon-left"></a> 
+			<a href="./bankcard_add.html" class="right icon-add_2" style="display:none;"></a>
+			<h1></h1>
+		</div>
+	</div>
+	<div id="help" class="help">
+		<img class="logo" style="height:200px;" src="" />
+		<dl>
+			<dd class="tel">客服电话：<a href=""></a></dd>
+			<dd class="tiem">工作时间：<span></span></dd>
+			<dd class="name">公司名称：<span></span></dd>
+			<dd class="address">公司地址：<span></span></dd>
+		</dl>
+	</div>
+
+	<script type="text/javascript">
+		
+		/** 公司信息配置 */
+		var company={
+			"shanghai_xincai":{
+				"logo":"../../resource/images/personal/logo.png",
+				"tel":"021-55962873",
+				"email":"cs@19500.com",
+				"tiem":"周一至周五9：00 ~ 17：30",
+				"name":"华夏鑫彩科技有限公司",
+				"address":"上海市虹口区飞虹路17号2楼"
+			},
+			"jiangxi_huashang":{
+				"logo":"../../resource/images/personal/huashanlogo.png",
+				"tel":"0791-86103151",
+				"email":"cs@19500.com",
+				"tiem":"9:00-21:00",
+				"name":"华善科技有限公司",
+				"address":"南昌市广场南路333号恒茂国际华城A单元9楼905室"
+			}
+		};
+		/*** 执行 **********************************************************************************/
+		$(function(){
+			/** 编译LESS **********************************************/
+            $.get("../../../../tool/apiY.php", { api: "lessphp",less:"lottery_mob/less/personal/help.less",css:"lottery_mob/css/personal/help.css"});
+			//$.get("../../../../tool/api.php", { api: "lessphp",less:"Terminal/less/personal/help.less",css:"Terminal/css/personal/help.css"});
+			//console.log(getCookie("_DeviceInfo"));
+			/** 获取用户数据 */
+			var userData = JSON.parse(getCookie("_userCenterInfo"));
+			/** 获取设备数据 */
+			var DeviceInfo = eval('(' + getCookie("_DeviceInfo") + ')');
+			//console.log(DeviceInfo);
+			//初始化设置
+			$("#tool>h1").text("帮助中心");
+			$("#help").css({paddingTop:($("#layout_fixedTop").outerHeight()+20)+"px"});
+
+			var gs=DeviceInfo["device"]["company_name"];
+			$("#help>img.logo").attr({src:company[gs].logo});
+			$("#help>dl>dd.tel>a").text(company[gs].tel).attr({href:"tel:"+company[gs].tel});
+			$("#help>dl>dd.email>a").text(company[gs].email).attr({href:"mailto:"+company[gs].email});
+			$("#help>dl>dd.tiem>span").text(company[gs].tiem);
+			$("#help>dl>dd.name>span").text(company[gs].name);
+			$("#help>dl>dd.address>span").text(company[gs].address);
+		});
+	</script>
+</body>
+</html>

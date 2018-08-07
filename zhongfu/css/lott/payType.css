@@ -1,0 +1,566 @@
+html {
+    font-size: 16px;
+}
+
+@media screen and (min-width: 375px) {
+    html {
+        font-size: calc(85.897435897436%);
+        font-size: calc(1.8974358974359px);
+    }
+}
+
+@media screen and (min-width: 414px) {
+    html {
+        font-size: calc(110.3566552901%);
+        font-size: calc(15.856655290102px);
+    }
+}
+
+@media screen and (min-width: 600px) {
+    html {
+        font-size: calc(120%);
+        font-size: calc(15px);
+    }
+}
+
+@media screen and (min-width: 1000px) {
+    html {
+        font-size: calc(132.1%);
+        font-size: calc(16.6px);
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: '微软雅黑', '宋体', 'Arial';
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}
+
+html, body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    color: #fff;
+}
+
+a {
+    text-decoration: none;
+    color: #222;
+}
+
+a:hover {
+    color: #de1e46;
+}
+
+a img {
+    border: none;
+}
+
+ol, ul, li {
+    list-style: none;
+}
+
+input, select {
+    outline: none;
+}
+
+h1, h2, h3, h4, h5, h6, h7, i, b {
+    font-weight: normal;
+    font-size: 0.38rem;
+    font-style: normal;
+}
+
+em {
+    color: red;
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.clearfix {
+    _zoom: 1;
+}
+
+.clearfix:after {
+    content: '';
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.txtL {
+    text-align: left;
+}
+
+.txtR {
+    text-align: right;
+}
+
+.txtC {
+    text-align: center;
+}
+
+.txtLR {
+    text-align: justify;
+}
+
+.on {
+    background-color: red;
+    color: #fff !important;
+    border: 1px solid transparent;
+}
+
+.selected {
+    border: 1px solid red !important;
+    color: red !important;
+}
+
+.checked {
+    background-color: yellow !important;
+}
+
+.disabled {
+    background-color: #e5e5e5 !important;
+}
+
+.error {
+    border: 1px solid #de1e46 !important;
+}
+
+.blue {
+    color: #1b82c0 !important;
+}
+
+.btn {
+    display: inline-block;
+    height: 1rem;
+    line-height: 1rem;
+    font-size: 0.45rem;
+    color: #222;
+    font-weight: bold;
+    margin: 0 0.24rem;
+    padding: 0 0.5rem;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.btn-orange {
+    background-color: #eca800;
+}
+
+.btn-primary {
+    background-color: #1c85c1;
+}
+
+.btn-default {
+    background-color: #eee;
+}
+
+.btn-ok {
+    background-color: #de1f46;
+}
+
+.form-control {
+    display: inline-block;
+    width: 100%;
+    border: 1px solid #e9e9e9;
+    -webkit-border-radius: 1em;
+    -moz-border-radius: 1em;
+    border-radius: 1em;
+}
+
+.floatLayer {
+    position: absolute;
+    top: 100%;
+    left: -20%;
+    z-index: 900;
+    height: 3em;
+    line-height: 3em;
+    font-size: 0.5em;
+    color: #000;
+    background-color: #fff;
+    border: 1px solid #aaa;
+    padding: 0 0.4em;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.floatLayer b {
+    display: inline-block;
+    border: 10px solid transparent;
+    border-bottom-color: #fff;
+    position: absolute;
+    top: -20px;
+    left: 75%;
+}
+
+.alertInfo {
+    width: 90%;
+    margin: 0 3%;
+    position: absolute;
+    top: 40%;
+    z-index: 900;
+    height: 3em;
+    line-height: 3em;
+    font-size: 0.5em;
+    text-align: center;
+    color: #fff;
+    background-color: #000;
+    padding: 0 0.4em;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+
+.fixBottom {
+    position: fixed !important;
+    left: 0;
+    bottom: 0;
+}
+
+.absoluteBox {
+    position: absolute !important;
+    bottom: 0;
+}
+
+.bg {
+    z-index: 901;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modalY {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 990;
+    height: 100vh;
+    width: 100vw;
+}
+
+.modalY .modalY-dialog {
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalY .modalY-dialog .modalY-content {
+    width: 90vw;
+    height: 80vh;
+    background-color: #fff;
+}
+
+.modalY .modalY-dialog .modalY-content .modalY-header {
+    height: 8vh;
+    line-height: 8vh;
+    font-size: 6vw;
+    text-align: center;
+    color: #222;
+    position: relative;
+}
+
+.modalY .modalY-dialog .modalY-content .modalY-header h4 {
+    font-size: 4vw;
+}
+
+.modalY .modalY-dialog .modalY-content .modalY-header .modalY-close {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    background-color: #fff;
+}
+
+.modalY .modalY-dialog .modalY-content .modalY-header .modalY-close i {
+    font-size: 4vw;
+}
+
+.modalY .modalY-dialog .modalY-content .modalY-body {
+    height: 64vh;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+.modalY .modalY-dialog .modalY-content .modalY-footer {
+    height: 8vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navBox {
+    position: relative;
+    width: 100%;
+    height: 1.4rem;
+    background-color: #de1e46;
+    text-align: center;
+    font-size: 0.7rem;
+}
+
+.navBox div {
+    display: inline-block;
+}
+
+.navBox a, .navBox div {
+    text-align: center;
+    height: 1.4rem;
+    line-height: 1.4rem;
+    color: #f9cfd8;
+    font-size: 0.7rem;
+}
+
+.navBox a {
+    width: 1.5rem;
+    display: inline-block;
+    zoom: 1;
+}
+
+.navBox a:first-child {
+    float: left;
+}
+
+.navBox a:last-child {
+    float: right;
+}
+
+.contentBox .payList p {
+    height: 1.2rem;
+    line-height: 1.2rem;
+    color: #222;
+    text-align: center;
+    font-size: 0.5rem;
+}
+
+.contentBox .payList p label {
+    color: red;
+}
+
+.contentBox .payList h1 {
+    background-color: #eee;
+    padding-left: 1rem;
+    height: 0.73rem;
+    line-height: 0.73rem;
+    font-size: 0.4rem;
+    color: #222;
+}
+
+.contentBox .payList > ul li {
+    position: relative;
+    background-color: #f5f5f5;
+    border: 2px solid #dcdcdc;
+    margin: 0.5rem;
+    padding-left: 0.73rem;
+    color: #222;
+    font-size: 0.38rem;
+}
+
+.contentBox .payList > ul li h4 {
+    height: 1rem;
+    line-height: 1rem;
+    font-size: 0.5rem;
+}
+
+.contentBox .payList > ul li i {
+    height: 0.73rem;
+    line-height: 0.73rem;
+}
+
+.contentBox .payList > ul li i a {
+    color: #1c84c0;
+}
+
+.contentBox .payList > ul li b {
+    position: absolute;
+    top: 0;
+    right: 0.5rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.contentBox .payList > ul li b img {
+    width: 1rem;
+}
+
+.contentBox .payList > div {
+    margin: 0.5rem;
+    font-size: 0.45rem;
+}
+
+.contentBox .payList > div #payOk {
+    color: #fff;
+    width: 100%;
+    margin: 0;
+}
+
+.contentBox .qrocodeBox {
+    display: none;
+    z-index: 999;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.contentBox .qrocodeBox .qrcodeCanvas {
+    background-color: #eee;
+    padding: 0 0.3rem;
+    text-align: center;
+}
+
+.contentBox .qrocodeBox .qrcodeCanvas h1, .contentBox .qrocodeBox .qrcodeCanvas h3, .contentBox .qrocodeBox .qrcodeCanvas h4 {
+    text-align: center;
+    color: #222;
+    height: 0.86rem;
+    line-height: 0.86rem;
+    font-size: 0.5rem;
+}
+
+.contentBox .qrocodeBox .qrcodeCanvas h3 {
+    border-top: 1px solid #e5e5e5;
+    font-size: 0.68rem;
+}
+
+.contentBox .qrocodeBox .qrcodeCanvas h3 i {
+    font-size: 0.68rem;
+}
+
+.contentBox .qrocodeBox .qrcodeCanvas h4 {
+    color: #de1e46;
+}
+
+.contentBox .account {
+    display: none;
+    background-color: #fff;
+    padding: 0 0.25rem;
+    margin: 1.5rem 0.5rem;
+}
+
+.contentBox .account li {
+    margin: 1rem 0.73rem;
+    font-size: 0.43rem;
+    position: relative;
+    text-align: center;
+}
+
+.contentBox .account li h1 {
+    color: #222;
+    font-size: 0.55rem;
+}
+
+.contentBox .account li i {
+    position: absolute;
+    top: 0.3rem;
+    left: 0.25rem;
+    color: #222;
+    font-size: 0.45rem;
+}
+
+.contentBox .account li input {
+    padding-left: 1rem;
+    box-sizing: border-box;
+    height: 1rem;
+    line-height: 1rem;
+    font-size: 0.43rem;
+}
+
+.contentBox .account li button {
+    width: 48%;
+    background-color: blue;
+    color: #fff;
+    height: 1rem;
+    font-size: 0.43rem;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.contentBox .validCode {
+    display: none;
+    background-color: #fff;
+    padding: 0 0.25rem;
+    margin: 0.25rem;
+}
+
+.contentBox .validCode li {
+    margin: 1rem 0;
+    position: relative;
+    text-align: center;
+}
+
+.contentBox .validCode li #validCode {
+    width: 55%;
+    padding-left: 0.5rem;
+    height: 1rem;
+    line-height: 1rem;
+    border: 1px solid #e9e9e9;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.contentBox .validCode li span {
+    display: inline-block;
+    width: 30%;
+    background-color: #ff9c00;
+    height: 1rem;
+    line-height: 1rem;
+    font-size: 0.35rem;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.contentBox .validCode li button {
+    width: 48%;
+    background-color: blue;
+    color: #fff;
+    height: 1rem;
+    font-size: 0.4rem;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.contentBox .payBg {
+    z-index: 901;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(256, 256, 256, 0.5);
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content:center;
+    background-image:url('../../resource/images/loading.gif');
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.contentBox .payBg #loadCountDown{
+    font-size:0.8rem;
+    font-style: normal;
+}

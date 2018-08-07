@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0" />
+    <meta name="msapplication-tab-highlight" content="no" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <title>福彩3D</title>
+
+    <link rel="stylesheet" href="../../../css/lott/3d/lottery-3d.css">
+    <link rel="stylesheet" href="../../../resource/iconFont/ui/style.css">
+
+    <script src='../../../library/js/jquery/3.1.1.min.js' type="text/javascript"></script>
+    <script type="text/javascript" src="../../../library/js/md5.js"></script>
+
+    <script src="../../../js/methodY.js"></script>
+    <script src="../../../js/common.js"></script>
+
+    <script>
+        //初始化rem基准值
+        common.remLayout(window);
+    </script>
+</head>
+<body>
+<header class="navBox clearfix">
+    <a href="javascript:common.backIndex('../index.html')" class="icon-home"></a>
+    <div>
+        <span class="title" data-type="11">3D-直选</span><i class="icon-bottom"></i>
+    </div>
+    <ul class="playList">
+        <!--玩法列表-->
+    </ul>
+
+    <a href="javascript:void(0)" class="icon-cart cart"></a>
+
+
+</header>
+<aside class="noteBox">
+    <!--期次、时间、历史记录-->
+    <p>
+        <span></span>本期截至还剩<i></i><b>历史</b>
+    </p>
+    <div class="historyRecord">
+        <h2>开奖记录</h2>
+        <ul>
+            <!--历史记录-->
+        </ul>
+    </div>
+</aside>
+<section class="contentBox">
+    <!--选号区域-->
+    <div class="direct">
+        <div class="hundred ">
+            <!--百位-->
+            <div>
+                <p><b>百位</b></p>
+            </div>
+            <ol class="clearfix">
+                <li>0</li>
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+                <li>7</li>
+                <li>8</li>
+                <li>9</li>
+            </ol>
+        </div>
+        <b></b>
+        <div class="ten">
+            <div>
+                <p><b>十位</b></p>
+            </div>
+
+            <!--十位-->
+            <ol class="clearfix">
+                <li>0</li>
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+                <li>7</li>
+                <li>8</li>
+                <li>9</li>
+            </ol>
+        </div>
+        <div class="bits">
+            <div>
+                <p><b>个位</b></p>
+            </div>
+
+            <!--个位-->
+            <ol class="clearfix">
+                <li>0</li>
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+                <li>7</li>
+                <li>8</li>
+                <li>9</li>
+            </ol>
+        </div>
+        <p class="awardInfo">与开奖号码相同（排序）即中奖<em>1040</em>元</p>
+    </div>
+    <div class="groupThree">
+        <div>
+            <div>
+                <p ><span>至少选<em>2</em>个号</span></p>
+            </div>
+            <ol>
+                <li>0</li>
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+                <li>7</li>
+                <li>8</li>
+                <li>9</li>
+            </ol>
+        </div>
+        <p class="awardInfo">开奖号码2个相同号码，且猜中即中奖<em>346</em>元</p>
+    </div>
+    <div class="groupSix">
+        <div>
+            <div>
+                <p><span>至少选<em>3</em>个号</span></p>
+            </div>
+            <ol>
+                <li>0</li>
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+                <li>7</li>
+                <li>8</li>
+                <li>9</li>
+            </ol>
+        </div>
+        <p class="awardInfo">开奖号码各不相同且猜中即中奖<em>173</em>元</p>
+    </div>
+</section>
+<footer class="footerBox">
+    <div class="noteInfo">
+        <!--选号提示信息-->
+        <label>已选<i>0</i>注，共<b></b>元</label>
+        <label>至少选择<i>1</i>注号码</label>
+    </div>
+    <div class="pickOpertion">
+        <!--操作区域-->
+        <div class="randomPick">
+            <a class="">机选</a>
+            <ul>
+                <li data-num="1">机选一注</li>
+                <li data-num="2">机选二注</li>
+                <li data-num="5">机选五注</li>
+            </ul>
+        </div>
+        <div class="addCar">
+            <a class=""><span>加入购物蓝<i>0</i></span></a>
+        </div>
+        <div class="pickOk">
+            <a class="">确定</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+
+    $(function(){
+        $('.contentBox').css('height',$('body').outerHeight()-$('.navBox').outerHeight()-$('.noteBox').outerHeight()-$('.footerBox').outerHeight()+'px');
+        $('.historyRecord').css('height',$('body').outerHeight()-$('.navBox').outerHeight()-$('.noteBox').outerHeight()+'px');
+        $.get("/../../tool/apiY.php", {
+            api: "lessphp",
+            less: "lottery_mob/less/lott/3d/lottery-3d.less",
+            css: "lottery_mob/css/lott/3d/lottery-3d.css"
+        });
+
+        methodY.loadScript('../../../js/ajaxY.js',function () {
+
+            methodY.loadScript('../../../js/validY.js',function () {
+                methodY.loadScript('../../../js/lott/pick_template.js',function () {
+                    methodY.loadScript('../../../js/lott/3d/lottery-3d.js',function () {
+                        lott.init(d3);
+                    })
+                })
+            })
+        })
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="msapplication-tap-highlight" content="no"/>
+<meta name="format-detection" content="telephone=no" />
+<title>银行卡管理</title>
+<link rel="stylesheet" href="../../resource/iconFont/ui/style.css" type="text/css" />
+<link rel="stylesheet" href="../../resource/iconFont/bank/style.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal/bankcard.css" type="text/css" />
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/jquery/3.1.1.min.js"></script>
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/md5.js"></script>
+<script type="text/javascript" src="../../js/personal.js"></script>
+<script type="text/javascript" src="../../js/ajax.js"></script>
+
+</head>
+
+<body>
+	<div id="layout_fixedTop" class="layout_fixedTop">
+		<div id="tool" class="tool">
+			<a href="./bankcard.html" class="left icon-left"></a> 
+			<a href="JavaScript:boundBankCard(this);" class="right">添加</a>
+			<h1></h1>
+		</div>
+	</div>
+	<div id="feedback" class="feedback" style="display:none;">
+		<i class="icon-icon_right no"></i>
+		<div style="padding:20px;">状态在此显示</div>
+	</div>
+	<div id="inputBox" class="inputBox">
+		<div class="prompt">
+			<i class="icon-d5"></i>
+			<p style="margin-left:20px;">
+				添加银行卡后可用于快捷充值和提现；
+			</p>
+		</div>
+		<div id="bankList" class="bankList" style="margin-top:20px;">
+			<h3 onclick="$('#bankList>ul').show();">选择所属银行:<span></span></h3>
+			<ul></ul>
+		</div>
+		<div class="editor" style="padding-top:20px;">
+			<ul class="form">
+				<li><span>银行卡号：</span><div><input id="inputCardNum" type="number" maxlength="19" required="required" style="display:inline;margin-left:0;"/></div></li>
+				<li><span>确认卡号：</span><div><input id="inputCardNumConfirm" type="number" maxlength="19" required="required" style="display:inline;margin-left:0;"/></div></li>
+				<li><span>所属省：</span><div><select name="bankPro" id="bankProId"></select></div></li>
+				<li><span>所属市：</span><div><select name="bankCity" id="bankCityId"></select></div></li>
+			</ul>
+
+			<ul class="form" style="margin-top:20px;">
+				<li><span>真实姓名：</span><div><input id="inputUserName" type="text" maxlength="7" required="required" style="display:inline;margin-left:0;"/></div></li>
+				<li><span>手&nbsp; 机&nbsp; 号：</span><div><input id="inputPhone" type="text" maxlength="11" required="required" style="display:inline;margin-left:0;"/></div></li>
+				<li><span>验&nbsp; 证&nbsp; 码：</span><div><input id="inputMessageCode" type="text" maxlength="6" required="required" style="display:inline;width:30%;"/><button id="buttonMessageCode" class="messageCode" onclick="messageCode(this,'inputPhone','2')" style="display:inline;margin-left:1%;">获取验证码</button></div></li>
+			</ul>
+			<div id="inputDefault" class="additional" style="margin-top:10px;">
+				<i class="icon-not_choose" stype="font-size:1.4em;"></i> 是否设置为默认银行卡
+			</div>
+		</div>
+		<div class="submitBox">
+			<button id="buttonSubmit" onclick="boundBankCard(this);">添加</button>
+		</div>
+	</div>
+	<script type="text/javascript">
+		/** 获取用户数据 */
+		var userData = JSON.parse(getCookie("_userCenterInfo"));
+		/*≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡*/
+		/*** 方法 **********************************************************************************/
+		/**
+		@显示提票
+			state=状态[布尔 true/false]
+			msg=提醒内容[字符串]
+		*/
+		function feedback(state,msg,callback){
+			if(callback){
+                callback(state,msg);
+			}else{
+                $("#feedback>i").attr({class:state?"icon-icon_right ok":"icon-delete no"});
+                $("#feedback>div").html(msg);
+                $("#feedback").css({paddingTop:($("#layout_fixedTop").outerHeight()+50)+"px"}).slideDown('normal');
+                $("#inputBox").slideUp('normal');
+                $("#tool>a.right").attr({href:"./bankcard.html"}).html("完成").show();
+			}
+		}
+
+
+
+		/**
+		@获取验证码
+		*/
+		function messageCode(ts,phoneId,type){
+			if($(ts).hasClass("disable")){return;}
+			var phone = phoneId=="cookie"?userData.phone:$("#"+phoneId).val();
+			var testPhone = testPhoneNum(phone);
+			if(testPhone=="ok"){
+				if(phoneId!="cookie"){$("#"+phoneId).addClass("ok");}
+				$(ts).addClass("disable").html("正在获取验证码");
+
+				ajax.getMessageCode(phone,type,"messageCodeSuccess","messageCodeError");
+
+			}else{
+				if(phoneId!="cookie"){
+					$("#"+phoneId).val("").attr({placeholder:testPhone}).parents("li").addClass("no");
+				}
+			}
+		}
+		//获取验证码成功
+		function messageCodeSuccess(data){
+			var djsSun=30;
+			var djsObj = setInterval(function(){
+				$("#buttonMessageCode").text(djsSun+"秒 后重新获取");
+				if(djsSun<1){
+					$("#buttonMessageCode").text("获取验证码").removeClass("disable");
+					clearInterval(djsObj);
+					return;
+				}
+				djsSun--;
+			},1000);
+		}
+		//获取验证码失败
+		function messageCodeError(data){
+			console.log(data);
+		}
+
+		/**
+		@发送请求-绑定银行卡
+		*/
+		function boundBankCard(ts){
+			if($(ts).hasClass("disable")){return;}
+
+			var Card1 = $("#inputCardNum").val();
+			var Card2 = $("#inputCardNumConfirm").val();
+			var testCard = testBankCard(Card1);
+
+            console.log(Card1);
+            console.log(Card2);
+            console.log(testCard);
+
+			var userName = $("#inputUserName").val();
+
+			var Phone = $("#inputPhone").val();
+			var testPhone = testPhoneNum(Phone);
+
+			var MessageCode=$("#inputMessageCode").val();
+			var shortBank = $("#bankList").attr("data");
+			var Default = $("#inputDefault").hasClass("choice")?1:0;
+
+			if(!shortBank){
+				$("#bankList>h3>span").text("请选择银行卡所属银行");
+				toScroll($("body"),$("#bankList").scrollTop());
+			}else if(testCard!="ok"){
+				$("#inputCardNum").attr({placeholder:testCard}).parents("li").addClass("no");
+			}else if(Card1.length>19){
+                $("#inputCardNumConfirm").parents("li").addClass("no");
+                popInfo('卡号格式错误');
+			}else if(Card2!=Card1){
+				$("#inputCardNumConfirm").parents("li").addClass("no");
+                popInfo('两次输入卡号不一致,请重新填写');
+			}else if(!userName){
+				$("#inputUserName").parents("li").addClass("no");
+				popInfo('请填写你的真实姓名');
+			}else if(testPhone!="ok"){
+				$("#inputUserName").parents("li").addClass("no");
+				popInfo(testPhone);
+			}else if(testPhone!="ok"){
+				$("#inputUserName").parents("li").addClass("no");
+				popInfo(testPhone);
+			}else if(MessageCode.length<6){
+				$("#inputUserName").parents("li").addClass("no");
+				popInfo('验证码输入错误');
+			}else{
+				$(ts).addClass("disable").html("正在提交,请稍候");
+				var toData={
+			        command:"boundBankCard",
+			        bizParams:{
+			        	phone:Phone,
+			        	bankNum:Card2,
+			        	peopleNum:userData.peopleNum,
+			        	shortBank:shortBank,
+			        	code:MessageCode,
+			        	isCome:Default,
+						bankProvince:$('#bankProId option:selected').text(),
+						bankCity:$('#bankCityId option:selected').text(),
+			        }
+			    };
+			    toData.MD5=utf8_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+			    ajax.interactive("POST",toData,"boundBankCardSuccess","boundBankCardError");
+			}
+		}
+		function boundBankCardSuccess(data){
+			if(data.code=="0000"){
+				feedback(true,data.msg);
+			}else{
+				feedback(false,data.msg);
+			}			
+			console.log(data);
+		}
+		function boundBankCardError(data){
+			feedback(false,"错误");
+			console.log(data);
+		}
+
+		/**
+		@发送请求-查询银行
+		*/
+		function queryBankInfo(ts){
+			var toData={
+		        command:"queryBankInfo",
+		        bizParams:{
+		        }
+		    };
+		    toData.MD5=utf8_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+		    ajax.interactive("POST",toData,"queryBankInfoSuccess","queryBankInfoError");
+		}
+		function queryBankInfoSuccess(data){
+			//console.log(data);
+			for(var key in data.bizResult){
+				var bank = data.bizResult[key];
+				$("#bankList>ul").append('<li name="'+bank.shortName+'"><i class="bank-'+bank.shortName+'"></i><span>'+bank.cardName+'</span></li>');
+			}
+		}
+		function queryBankInfoError(data){
+			console.log(data);
+		}
+		//倒计时
+		function timeDown(state,msg){
+		    var timer = null;
+		    var timing=5;
+		    setInterval(function(){
+                $("#inputBox").hide();
+                $("#feedback>i").css({display:'none'});
+                $("#feedback>div").html(msg+timing+'s后自动跳转...');
+                $("#feedback").css({marginTop:($("#layout_fixedTop").outerHeight()+200)+"px",backgroundColor:'#fff'}).show();
+                $("#inputBox").css({opcity:'0.6'});
+                $("#tool>a.right").hide();
+				timing--;
+				if(timing <= 0 ){
+				    clearInterval(timer);
+				    window.open('security_edit.html?project=isreal&type=add&backUrl=bankcard_add','_self');
+				}
+			},1000)
+		}
+		/*≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡*/
+
+		/*≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡*/
+		/*** 执行 **********************************************************************************/
+		$(function(){
+			//console.log(userData);
+			/** 编译LESS **********************************************/
+//			$.get("../../../../tool/api.php", { api: "lessphp",less:"Terminal_ZF/less/personal/bankcard.less",css:"Terminal_ZF/css/personal/bankcard.css"});
+
+			$("#tool>h1").text("添加银行卡");
+			$("#inputBox").css({paddingTop:($("#layout_fixedTop").outerHeight()+20)+"px"});
+
+            //验证实名
+
+            (userData.isreal==0) && (feedback(false ,"请先进行<a href='security_edit.html?project=isreal&type=add&backUrl=bankcard_add'>实名认证</a>,",timeDown));
+
+			$("#inputUserName").val(userData.name).attr({disabled:"disabled"});
+			$("#inputPhone").val(userData.phone).attr({disabled:"disabled"});
+
+			//若当前账户下没有银行卡，则自动勾选默认
+                userData.bankCardList.length==0 && $("#inputDefault").addClass('choice').find(">i").removeClass("icon-not_choose").addClass("icon-has_chosen");
+
+			//选择银行卡
+			$("#bankList>ul").on("click",">li",function(){
+				$("#bankList").attr({data:$(this).attr("name")}).find(">h3>span").html('<i class="bank-'+$(this).attr("name")+'" style="padding-right:2px;"></i>'+$(this).find(">span").text());
+				$(this).parent().find(">li").removeClass("choice");
+				$(this).addClass("choice");
+				$("#bankList>ul").hide();
+			});
+
+			//是否设置默认
+			$("#inputDefault").on("click",function(){				
+				if($(this).hasClass("choice")){
+					$(this).removeClass("choice").find(">i").removeClass("icon-has_chosen").addClass("icon-not_choose");
+				}else{
+					$(this).addClass("choice").find(">i").removeClass("icon-not_choose").addClass("icon-has_chosen");
+				}
+			});
+
+
+			queryBankInfo();
+
+
+			//加载省市信息
+            $.getJSON("../../js/json/province.json",function(data,textStatus,jqXHR){
+                var pro=data['pro'];
+                var citys=data['citys'];
+				$.each(pro,function (i, obj) {
+					var option=$("<option value='"+obj.ProID+"'>"+obj.name+"</option>");
+					option.appendTo($("#bankProId"));
+                })
+
+                //省市关联
+                $("#bankProId").change(function () {
+                    var proId=$(this).val();
+                    $("#bankCityId").empty();
+                    //加载对应市
+                    $.each(citys,function (i, obj) {
+
+
+                        if(obj.ProID==proId){
+                            var option=$("<option value='"+obj.CityID+"' data-pro='"+obj.ProID+"'>"+obj.name+"</option>");
+                            option.appendTo($("#bankCityId"));
+						}
+                    })
+                })
+
+
+                $("#bankProId").trigger('change');
+			})
+		});
+	</script>
+</body>
+</html>

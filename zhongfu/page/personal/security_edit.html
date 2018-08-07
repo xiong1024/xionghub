@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="msapplication-tap-highlight" content="no"/>
+<meta name="format-detection" content="telephone=no" />
+<title>安全中心</title>
+<link rel="stylesheet" href="../../resource/iconFont/ui/style.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal/security.css" type="text/css" />
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/jquery/3.1.1.min.js"></script>
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/md5.js"></script>
+<script type="text/javascript" src="../../js/personal.js"></script>
+<script type="text/javascript" src="../../js/ajax.js"></script>
+	<script src="../../js/base.js"></script>
+</head>
+
+<body>
+	<div id="layout_fixedTop" class="layout_fixedTop">
+		<div id="tool" class="tool">
+			<a href="javascript:history.go(-1);" class="left icon-left"></a>
+			<a href="#" class="right" style="display:none;font-size:1.5em;">完成</a>
+			<h1>密码修改</h1>
+		</div>
+	</div>
+	<div id="feedback" class="feedback" style="display:none;">
+		<i class="icon-icon_right no"></i>
+		<div>状态在此显示</div>
+	</div>
+	<div id="edit" class="edit">
+		<div class="prompt">
+			<i class="icon-d5"></i>
+			<p style="margin-left:20px;">
+				1、真实姓名是您提款时的重要依据，填写后不可更改；<br />
+				2、您的个人信息将被严格保密，不会用于任何第三方用途；
+			</p>
+		</div>
+		<div class="editor" style="padding-top:20px;">
+		</div>
+		<div class="submitBox">
+			<button id="buttonSubmit">提交</button>
+		</div>
+	</div>
+	<script type="text/javascript">
+		/** 获取用户数据 */
+		var userData = JSON.parse(getCookie("_userCenterInfo") || null);
+		console.log(userData);
+		/*≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡*/
+		/*** 初始货界面 *****************************************************************************/
+		switch($_GET["project"]){
+			case "password"://修改密码
+				$("#edit>.prompt").remove();
+				$("#tool>h1").html("修改密码");
+
+				if($_GET["type"]=="edit"){
+					$("#edit>.editor").html('<ul class="form">\
+						<li><span>手机号码：</span><em>'+userData.phone+'</em></li>\
+						<li><span>验 证 码：</span><input id="inputMessageCode" type="text" maxlength="7" required="required" style="width:30%;display:inline;margin-left:0;"/><button class="messageCode" onclick="messageCode(this,\'cookie\',\'7\')" style="display:inline;margin-left:5px;">获取验证码</button></li>\
+						<li><span>新 密 码：</span><input id="inputNewPassword" type="password" required="required" placeholder="请输入6位以上的密码" style="width:70%;"/></li>\
+						<li><span>确认密码：</span><input id="inputPasswordConfirm" type="password" required="required" placeholder="请在次确认你的密码" style="width:70%;"/></li>\
+						</ul>\
+					');
+					$("#buttonSubmit").attr({onclick:'postModifyPassward(this)'});
+				}
+			break;
+
+			case "phone"://修改手机号码
+				$("#edit>.prompt").remove();
+				if($_GET["type"]=="add"){
+					$("#tool>h1").html("绑定手机号");
+
+				}else if($_GET["type"]=="edit"){
+					$("#tool>h1").html("修改绑定手机号");
+					$("#edit>.editor").html('<ul class="form">\
+						<li><span>原手机号：</span><em>'+userData.phone+'</em></li>\
+						<li><span>新手机号：</span><input id="inputPhone" onfocus="initializeInput(this)" type="text" maxlength="11" required="required" placeholder="请输入11位手机号码" style="width:70%;"/></li>\
+						<li><span>验 证 码：</span><input id="inputMessageCode" type="text" maxlength="6" required="required" style="width:30%;display:inline;margin-left:0;"/><button class="messageCode" onclick="messageCode(this,\'inputPhone\',\'6\')" style="display:inline;margin-left:5px;">获取验证码</button></li>\
+						</ul>\
+					');
+					$("#buttonSubmit").attr({onclick:'postModifyUserName(this)'});
+				}
+			break;
+
+			case "isreal"://实名认证
+				$("#tool>h1").html("实名认证");
+				//console.log("实名认证");
+				if($_GET["type"]=="add"){
+					$("#edit>.editor").html('<ul class="form">'+
+							'<li><span>真实姓名：</span><input id="inputUserName"  onfocus="initializeInput(this)" type="text" maxlength="7" required="required" placeholder="请写入你的真实姓名" style="width:30%;"/></li>'+
+							'<li><span>身份证号：</span><input id="inputNumberId"  onfocus="initializeInput(this)" type="text" maxlength="18" required="required" placeholder="请输入身份证号码" style="width:70%;"/></li>'+
+						'</ul>'+
+						'<div class="remarks">* 暂不支持港澳台身份证、军官证、护照等相关证件进行实名认证；</div>'
+					);
+					$("#buttonSubmit").attr({onclick:'postBoundIdCard(this)'});
+				}
+			break;
+		}
+		/*≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡*/
+
+		/*≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡*/
+		/*** 方法 **********************************************************************************/
+		/**
+		@初始化输入框
+		*/
+		function initializeInput(ts){
+			$(ts).removeClass("no");
+		}
+
+		/**
+		@显示提票
+			state=状态[布尔 true/false]
+			msg=提醒内容[字符串]
+		*/
+		function feedback(state,msg){
+			$("#feedback>i").attr({class:state?"icon-icon_right ok":"icon-delete no"});
+			$("#feedback>div").html(msg);
+			$("#feedback").css({paddingTop:($("#layout_fixedTop").outerHeight()+50)+"px"}).show();
+			$("#edit").hide();
+			var url=$_GET['backUrl'] ? './'+$_GET['backUrl']+'.html' :  './security.html';
+			$("#tool>a.right").attr({href:url}).html("完成").show();
+		}
+
+
+		/**
+		@获取验证码
+		*/
+		function messageCode(ts,phoneId,type){
+			if($(ts).hasClass("disable")){return;}
+			var phone = phoneId=="cookie"?userData.phone:$("#"+phoneId).val();
+			var testPhone = testPhoneNum(phone);
+			if(testPhone=="ok"){
+				if(phoneId!="cookie"){$("#"+phoneId).addClass("ok");}
+				$(ts).addClass("disable").html("正在获取验证码");
+
+				ajax.getMessageCode(phone,type,"messageCodeSuccess","messageCodeError");
+
+			}else{
+				if(phoneId!="cookie"){
+					$("#"+phoneId).val("").attr({placeholder:testPhone}).addClass("no");
+				}
+			}
+		}
+		//获取验证码成功
+		function messageCodeSuccess(data){
+			var djsSun=30;
+			var djsObj = setInterval(function(){
+				$("#edit>.editor>ul>li>button.messageCode").text(djsSun+"秒 后重新获取");
+				if(djsSun<1){
+					$("#edit>.editor>ul>li>button.messageCode").text("获取验证码").removeClass("disable");
+					clearInterval(djsObj);
+					return;
+				}
+				djsSun--;
+			},1000);
+		}
+		//获取验证码失败
+		function messageCodeError(data){
+			console.log(data);
+		}
+
+		/**
+		@发送请求-实名认证
+		*/
+		function postBoundIdCard(ts){
+			if($(ts).hasClass("disable")){return;}
+			var userName = $("#inputUserName").val();
+			var NumberId = $("#inputNumberId").val();
+			var testNumberId = validIdCard(NumberId);
+
+			if(!userName||userName.length<2){
+				$("#inputUserName").addClass("no");
+				popInfo('姓名错误');
+			}else if(testNumberId!="0000"){
+				$("#inputNumberId").addClass("no");
+                popInfo(testNumberId);
+			}else{
+				$(ts).addClass("disable").html("正在提交,请稍候");
+				console.log(userData);
+				var toData={
+			        command:"boundIdCard",
+			        bizParams:{
+			        	phone:userData.phone,
+			        	peopleNum:NumberId,
+			        	name:userName,
+			        	sex:0//0:未知
+			        }
+			    };
+			    toData.MD5=utf8_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+			     console.log(toData);
+			    ajax.interactive("POST",toData,"BoundIdCardSuccess","BoundIdCardError");
+			}
+		}
+		//成功
+		function BoundIdCardSuccess(data){
+		    if(data.code=='0000'){
+				userData.isreal='1';
+				userData.name=userName;
+                //更新用户信息
+                setCookie("_userCenterInfo",JSON.stringify(userData),86400000);
+                feedback(true,"实名认证成功");
+			}else{
+		        feedback(false,data.msg);
+			}
+
+			//console.log(data);
+		}
+		//失败
+		function BoundIdCardError(data){
+			feedback(false,data.msg);
+			//console.log(data);
+		}
+
+		/**
+		@发送请求-修改手机号码
+		*/
+		var userName;
+		function postModifyUserName(ts){
+			if($(ts).hasClass("disable")){return;}
+
+			userName = $("#inputPhone").val();
+			var testuserName = testPhoneNum(userName);
+			var Code = $("#inputMessageCode").val();
+			if(!Code||Code.length<6){
+				$("#inputMessageCode").attr({placeholder:"验证码错误"}).addClass("no");
+			}else if(testuserName!="ok"){
+				$("#inputPhone").attr({placeholder:"手机号码错误"}).addClass("no");
+			}else if(!Code||Code.length<6){
+				$("#inputMessageCode").attr({placeholder:"验证码错误"}).addClass("no");
+			}else{
+				$(ts).addClass("disable").html("正在提交,请稍候")
+				var toData={
+			        command:"modifyUserName",
+			        bizParams:{
+			        	oldPhone:userData.phone,
+			        	newPhone:userName,
+			        	code:Code
+			        }
+			    };
+			    toData.MD5=utf8_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+			    ajax.interactive("POST",toData,"ModifyUserNameSuccess","ModifyUserNameError");
+			}
+		}
+		function ModifyUserNameSuccess(data){
+			if(data.code=="0000"){
+				userData.phone = userName;
+				//储存用户信息
+			    setCookie("_userCenterInfo",JSON.stringify(userData),86400000);
+				feedback(true,"修改手机号码成功");
+			}
+			//console.log(data);
+		}
+		function ModifyUserNameError(data){
+			feedback(false,data);
+			//console.log(data);
+		}
+
+		/**
+		@发送请求-修改密码
+		*/
+		function postModifyPassward(ts){
+			if($(ts).hasClass("disable")){return;}
+			var Code = $("#inputMessageCode").val();
+			var m1 = $("#inputNewPassword").val();
+			var m2 = $("#inputPasswordConfirm").val()
+			if(!Code||Code.length < 6){
+				$("#inputMessageCode").val('').attr({placeholder:"验证码错误"}).addClass("no");
+			}else if(m1.length<6){
+				$("#inputNewPassword").val('').attr({placeholder:"请输入>=6位的密码"}).addClass("no");
+			}else if(m2!=m1){
+				$("#inputPasswordConfirm").val('').attr({placeholder:"两次密码不一至,请重新输入"}).addClass("no");
+			}else{
+				$(ts).addClass("disable").html("正在提交,请稍候");
+				var toData={
+			        command:"modifyPassward",
+			        bizParams:{
+			        	newPassword:m2,
+			        	phone:userData.phone,
+			        	code:Code
+			        }
+			    };
+			    toData.MD5=utf8_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+			    ajax.interactive("POST",toData,"ModifyPasswardSuccess","ModifyPasswardError");
+			}
+		}
+		function ModifyPasswardSuccess(data){
+			if(data["code"]=="0000"){
+				feedback(true,"修改密码成功");
+			}else if(data["code"]=="2005"){
+				$("#inputMessageCode").attr({placeholder:data.msg}).addClass("no");
+				$("#buttonSubmit").removeClass("disable").text("提交");
+			}
+			console.log(data);
+		}
+		function ModifyPasswardError(data){
+			feedback(false,data.msg);
+			console.log(data);
+		}
+
+		/*≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡*/
+
+		/*≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡*/
+		/*** 执行 **********************************************************************************/
+		$(function(){
+			/** 编译LESS **********************************************/
+
+            $.get("../../../../tool/apiY.php", { api: "lessphp",less:"lottery_mob/less/personal/security.less",css:"lottery_mob/css/personal/security.css"});
+			//$.get("../../../../tool/api.php", { api: "lessphp",less:"Terminal/less/personal/security.less",css:"Terminal/css/personal/security.css"});
+
+			//初始化设置
+			$("#edit").css({paddingTop:($("#layout_fixedTop").outerHeight()+20)+"px"});
+		});
+	</script>
+</body>
+</html>

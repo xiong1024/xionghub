@@ -1,0 +1,38 @@
+.ConF(){overflow:visible; overflow:auto; zoom:1;}//浮动高智能处理
+.ov(){overflow:hidden;}//超出裁剪
+.Xhx(){ text-decoration:underline; }//下划线
+.Abox(){display:block; display:inline-block;*display:inline;zoom:1;}//容器受控
+
+.Bc(@v){background-color:@v;}
+.Bk(@a:1px,@b:solid,@c:#333){border-width:@a;border-style:@b;border-color:@c;}
+.YuanJ(@CSx:2px){-moz-border-radius:@CSx;-webkit-border-radius:@CSx; border-radius:@CSx;}//圆角化
+
+/*背景色Y渐变*/
+.libraryBg(@T,@D){
+	background-color:@D; /* 一些不支持背景渐变的浏览器 */ 
+	background-image: -moz-linear-gradient(top, @T, @D); /* Firefox */
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, @T), color-stop(1, @D)); /* Saf4+, Chrome */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=@T, endColorstr=@D, GradientType='0'); /* IE*/
+}
+
+//透明度 @e=传入值(0~1之间)
+.Opacity(@e){@o:@e * 100;filter:~"alpha(opacity=@{o})";-moz-opacity:@e;opacity:@e;}
+
+//模糊 @e=传入值（单位PX）
+.Row(@e){
+	filter: blur(@e);
+	-webkit-filter: blur(@e);
+	-moz-filter: blur(@e);
+	-o-filter: blur(@e);
+	-ms-filter: blur(@e);
+}
+
+.Left(){float:left;}
+.Right(){float:right;}
+
+.TexL(){text-align:left;}
+.TexR(){text-align:right;}
+.TexC(){text-align:center;}
+.TexLR(){text-align:justify;}
+
+.SbSou(){cursor:pointer;}

@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="msapplication-tap-highlight" content="no"/>
+<meta name="format-detection" content="telephone=no" />
+<title>安全中心</title>
+<link rel="stylesheet" href="../../resource/iconFont/ui/style.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal/security.css" type="text/css" />
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/jquery/3.1.1.min.js"></script>
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/md5.js"></script>
+<script type="text/javascript" src="../../js/personal.js"></script>
+<script type="text/javascript" src="../../js/ajax.js"></script>
+
+</head>
+
+<body>
+	<div class="summary">
+		<div id="tool" class="tool">
+			<a href="javascript:history.go(-1);" class="left icon-left"></a> 
+			<a href="./security_edit.html?project=password&type=edit" class="right" style="font-size:24px;">密码修改</a>
+			<h1></h1>
+		</div>
+		<div id="GradeBox" class="Grade" style="margin:30px auto 10px;">
+			<div class="Pan">&nbsp;</div>
+			<div class="Box">
+				<div class="sx sx1"><div>&nbsp;</div></div>
+				<div class="sx sx2"><div>&nbsp;</div></div>
+			</div>
+			<div class="Data">
+				<h3>0<em>%</em></h3>
+				<span>安全指数</span>
+			</div>
+		</div>
+		<h4>* 你可以通过完善以下信息来提高账户安全指数；</h4>
+	</div>
+	<div id="optionList" class="optionList">
+		<ul>
+			<li class="phone">
+				<i class="icon-iphone"></i>
+				<dl>
+					<dt>手机绑定</dt>
+					<dd>未绑定</dd>
+				</dl>
+				<button>立即绑定</button>
+			</li>
+			<li class="isreal">
+				<i class="icon-d1"></i>
+				<dl>
+					<dt>实名认证</dt>
+					<dd>个人身份认证，用于提款和确认</dd>
+				</dl>
+				<button>立即认证</button>
+			</li>
+		</ul>
+	</div>
+
+	<script type="text/javascript">
+		/** 获取用户数据 */
+		var userData = JSON.parse(getCookie("_userCenterInfo"));
+		function setbacks(sun){
+			var box = $("#GradeBox");
+			if(sun<0||sun>100){
+				box.find(">.Data>h3").css({fontSize:"2.5em"}).html("ERROR");
+				box.find(">.Data>span").html("请查检数据");
+			}else{
+				box.find(">.Data>h3").html(sun+"<em>%</em>");
+				box.find(">.Data>span").html("安全指数");
+				var r = 3.6 * sun;
+				if(r>=0&&r<180){
+					box.find(">.Box>div.sx1").show();
+					box.find(">.Box>div.sx2").show().find(">div").css({transform:"rotate(-"+(180 - r)+"deg)"});				
+				}else if(r==180){
+					box.find(">.Box>div.sx2").hide();
+				}else if(r>180&&r<360){
+					box.find(">.Box>div.sx1").show().find(">div").css({transform:"rotate("+(r - 180)+"deg)"});
+					box.find(">.Box>div.sx2").hide();
+				}else if(r>=360){
+					box.find(">.Box>div.sx1").hide();
+					box.find(">.Box>div.sx2").hide();
+				}
+			}
+			var Data={
+				w:box.find(">.Data").width(),
+				h:box.find(">.Data").height()
+			};
+			box.find(">.Data").css({margin:"-"+(Data.h/2)+"px 0 0 -"+(Data.w/2)+"px"});
+		}
+		/*** 执行 **********************************************************************************/
+		$(function(){
+			/** 编译LESS **********************************************/
+            $.get("../../../../tool/apiY.php", { api: "lessphp",less:"lottery_mob/less/personal/security.less",css:"lottery_mob/css/personal/security.css"});
+			//$.get("../../../../tool/api.php", { api: "lessphp",less:"Terminal/less/personal/security.less",css:"Terminal/css/personal/security.css"});
+			setbacks(0);
+			/** 安全综合评分 */
+			if(userData){
+				//总得分
+				var score = 0;
+				//待检查项目
+				var securityProject={
+					"phone":50,//手机号的占比分数
+					"isreal":50//实名认证占比分数
+				};
+				for(var key in securityProject){
+					switch(key){
+						case "phone":
+							if(userData.phone){
+								score+=securityProject[key];
+								$("#optionList>ul>li."+key).prepend('<em class="ok">已绑定</em>');
+								$("#optionList>ul>li."+key).find(">button").html("　修改　");
+								$("#optionList>ul>li."+key).find(">dl>dd").text("手机号："+userData.phone.replace(r_sjhao, "$1 **** $2"));
+								$("#optionList>ul>li."+key).attr({onclick:"document.location='./security_edit.html?project=phone&type=edit'"});
+							}else{
+								$("#optionList>ul>li."+key).find(">button").html("立即绑定");
+								$("#optionList>ul>li."+key).attr({onclick:"document.location='./security_edit.html?project=phone&type=add'"});
+							}
+						break;
+						case "isreal":
+							if(userData.isreal==1){
+								score+=securityProject[key];
+								$("#optionList>ul>li."+key).prepend('<em class="ok">已认证</em>');
+								$("#optionList>ul>li."+key).find(">button").remove();
+								$("#optionList>ul>li."+key).removeAttr("onclick");
+							}else{
+								$("#optionList>ul>li."+key).find(">button").html("立即绑定");
+								$("#optionList>ul>li."+key).attr({onclick:"document.location='./security_edit.html?project=isreal&type=add'"});
+							}
+						break;
+					}
+				}
+				setbacks(score);
+			}
+			
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="msapplication-tap-highlight" content="no"/>
+<meta name="format-detection" content="telephone=no" />
+<title>提现</title>
+<link rel="stylesheet" href="../../resource/iconFont/ui/style.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal/award.css" type="text/css" />
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/jquery/3.1.1.min.js"></script>
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/md5.js"></script>
+<script type="text/javascript" src="../../js/personal.js"></script>
+<script type="text/javascript" src="../../js/ajax.js"></script>
+
+</head>
+
+<body>
+	<div id="layout_fixedTop" class="layout_fixedTop">
+		<div id="tool" class="tool">
+			<a href="javascript:history.go(-1);" class="left icon-left"></a> 
+			<a href="./bankcard_add.html" class="right icon-add_2" style="display:none;"></a>
+			<h1></h1>
+		</div>
+	</div>
+	<div id="award" class="award">
+		<div class="option account" name="account">
+			<h2><i class="icon-d4"></i> 返奖至个人账户</h2>
+			<div>
+				<h3>账户名：<span id="userName1">--</span></h3>
+				<p style="padding:5px 0;">系统自动生成的账户名，既为您的手机号码；</p>
+				<span><i class="icon-h6"></i>中奖奖金可用于"账户支付"或"提现"操作；</span>
+			</div>
+		</div>
+		<div class="option bank" name="bank">
+			<h2><i class="icon-d4"></i> 返奖至银行卡账户</h2>
+			<div>
+				<h3>持卡人：<span id="userName2">--</span></h3>
+				<span><i class="icon-h6"></i>为了保证资金安全，只能返奖至购彩人本人银行卡；</span>				
+				<dl id="bankList"></dl>
+				<div><a href="./bankcard_add.html"><i class="icon-add"></i> 使用其它银行卡</a></div>
+			</div>
+		</div>
+	</div>
+	<div class="Explain">
+		<h2>温馨提示：</h2>
+		<div>
+			<h3>单注中奖金额 1万元（含）以下，自动返奖（2种返奖方式）</h3>
+			<p>
+			　　购彩交易完成后或者登录会员中心，设置以下2种返奖方式：<br />
+			（1）默认返至个人账户（购彩完成自动生成账户信息，短信通知，账户名即为您的手机号码。）<br />
+			返奖时间：开奖后4-6小时内返奖。账户内中奖奖金可使用‘账户支付’，用于继续购彩等其他业务 或‘申请提现’至银行卡。<br />
+			（2）返至购彩本人指定银行卡（若直接购彩用户，需要绑定身份证信息后可选择此返奖方式）。<br />
+			返奖时间：开奖后1-3个工作日内返奖。
+			</p>
+		</div>
+		<div>
+			<h3>单注中奖金额 1万元以上，人工通知，本人领奖；</h3>
+			<p>
+			身份证购彩用户：请持本人身份证至福彩中心领取；<br />
+			直接购彩用户（未经实名认证用户）：请持手机号码账单信息、本人身份证至福彩中心领取。<br />
+			上海市福利彩票发行中心兑奖处：上海市黄浦区四川中路321号中央大厦1层。<br />
+			江西省福利彩票发行中心兑奖处：江西省南昌市八一大道96号华龙国际大厦24-25层。
+			</p>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var userData;
+		function backBonus(data){
+			$("#award>div").removeClass("choice").find(">h2>i").removeClass("icon-d3").addClass("icon-d4");
+			$("#award>div.Handle").addClass("choice").removeClass("Handle").find(">h2>i").removeClass("icon-d4").addClass("icon-d3");
+			//更新用户信息
+		    setCookie("_userCenterInfo",JSON.stringify(userData),86400000);
+		}
+		/*** 执行 **********************************************************************************/
+		$(function(){
+			/** 编译LESS **********************************************/
+            $.get("../../../../tool/apiY.php", { api: "lessphp",less:"lottery_mob/less/personal/award.less",css:"lottery_mob/css/personal/award.css"});
+			//$.get("../../../../tool/api.php", { api: "lessphp",less:"Terminal/less/personal/award.less",css:"Terminal/css/personal/award.css"});
+			//console.log(getCookie("_DeviceInfo"));
+			/** 获取用户数据 */
+			userData = JSON.parse(getCookie("_userCenterInfo"));
+			/** 获取设备数据 */
+			var DeviceInfo = eval('(' + getCookie("_DeviceInfo") + ')');
+			//初始化设置
+			$("#tool>h1").text("返奖方式管理");
+			$("#award").css({paddingTop:($("#layout_fixedTop").outerHeight()+20)+"px"});
+
+			//console.log(userData);
+
+			$("#userName1").html(userData.phone.replace(r_sjhao, "$1 **** $2"));
+			$("#userName2").html(userData.name);
+
+			for(var key in userData.bankCardList){
+				var _bank = userData.bankCardList[key];
+				var choose="icon-not_choose";
+				if(_bank.status>0){choose="icon-has_chosen";}
+				$("#bankList").append('<dd><span>尾号 '+_bank.bankNum.replace(r_kahao, "$2")+'</span><i class="'+choose+'"></i> '+_bank.cardName+' | 储蓄卡</dd>');
+			}
+
+
+			if(userData.prizeType=="0"){
+				$("#award>.account").addClass("choice").find(">h2>i").removeClass("icon-d4").addClass("icon-d3");;
+			}else{
+				$("#award>.bank").addClass("choice").find(">h2>i").removeClass("icon-d4").addClass("icon-d3");;
+			}
+
+
+			$("#award>div.option").on("click",function(){
+				$("#award>div.option").removeClass("Handle");
+				$(this).addClass("Handle");
+				var fs="0";
+				if($(this).attr("name")=="account"){
+					fs="0";
+				}else if($(this).attr("name")=="bank"){
+					fs="1";
+				}
+				userData.prizeType=fs;
+				var toData={
+			        command:"backBonus",
+			        bizParams:{phone:userData.phone,prizeType:fs}
+			    };
+			    toData.MD5=hex_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+			    ajax.interactive("POST",toData,"backBonus","");
+			});
+
+		});
+	</script>
+</body>
+</html>

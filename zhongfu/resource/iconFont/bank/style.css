@@ -1,0 +1,108 @@
+@font-face {
+  font-family: 'bank';
+  src:  url('fonts/bank.eot?6dfwsd');
+  src:  url('fonts/bank.eot?6dfwsd#iefix') format('embedded-opentype'),
+    url('fonts/bank.ttf?6dfwsd') format('truetype'),
+    url('fonts/bank.woff?6dfwsd') format('woff'),
+    url('fonts/bank.svg?6dfwsd#bank') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="bank-"], [class*=" bank-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'bank' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bank-cgd:before {
+  content: "\e90d";
+}
+.bank-pbc:before {
+  content: "\e919";
+}
+.bank-nbcb:before {
+  content: "\e91a";
+}
+.bank-pab:before {
+  content: "\e918";
+}
+.bank-abc:before {
+  content: "\e900";
+}
+.bank-Add:before {
+  content: "\e901";
+}
+.bank-bocom:before {
+  content: "\e902";
+}
+.bank-bc:before {
+  content: "\e903";
+}
+.bank-bs:before {
+  content: "\e904";
+}
+.bank-ccb:before {
+  content: "\e905";
+}
+.bank-cncb:before {
+  content: "\e906";
+}
+.bank-ceb:before {
+  content: "\e907";
+}
+.bank-chat:before {
+  content: "\e908";
+}
+.bank-cmb:before {
+  content: "\e909";
+}
+.bank-cmbc:before {
+  content: "\e90a";
+}
+.bank-cib:before {
+  content: "\e90b";
+}
+.bank-gcb:before {
+  content: "\e90c";
+}
+.bank-gnxh:before {
+  content: "\e90e";
+}
+.bank-hxb:before {
+  content: "\e90f";
+}
+.bank-icbc:before {
+  content: "\e910";
+}
+.bank-Pay:before {
+  content: "\e911";
+}
+.bank-ems:before {
+  content: "\e912";
+}
+.bank-sdb:before {
+  content: "\e913";
+}
+.bank-spdb:before {
+  content: "\e914";
+}
+.bank-srcb:before {
+  content: "\e915";
+}
+.bank-unionpay:before {
+  content: "\e916";
+}
+.bank-xccb:before {
+  content: "\e917";
+}
+

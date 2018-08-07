@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="msapplication-tap-highlight" content="no"/>
+<meta name="format-detection" content="telephone=no" />
+<title>提现</title>
+<link rel="stylesheet" href="../../resource/iconFont/ui/style.css" type="text/css" />
+<link rel="stylesheet" href="../../resource/iconFont/bank/style.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal.css" type="text/css" />
+<link rel="stylesheet" href="../../css/personal/withdrawals.css" type="text/css" />
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/jquery/3.1.1.min.js"></script>
+<script type="text/javascript" src="http://59.52.25.51:18090/library/js/md5.js"></script>
+<script type="text/javascript" src="../../js/personal.js"></script>
+<script type="text/javascript" src="../../js/ajax.js"></script>
+
+</head>
+
+<body>
+	<div id="layout_fixedTop" class="layout_fixedTop">
+		<div id="tool" class="tool">
+			<a href="javascript:history.go(-1);" class="left icon-left"></a> 
+			<a href="./bankcard_add.html" class="right icon-add_2" style="display:none;"></a>
+			<h1></h1>
+		</div>
+	</div>
+	<div id="feedback" class="feedback" style="display:none;">
+		<i class="icon-icon_right no"></i>
+		<div style="padding:20px;">状态在此显示</div>
+	</div>
+	<div id="withdrawals" class="withdrawals information">
+		<div class="prompt">
+			<i class="icon-d5"></i>
+			<p style="margin-left:20px;">
+				可将你的账户余额提现至绑定的银行卡中；
+			</p>
+		</div>
+		<div id="bankList" class="bankList" style="margin-top:20px;" state="close">
+			<h3 onclick="$('#bankList>ul').show();">用于提现的银行卡:</h3>
+			<ul></ul>
+		</div>
+		<div class="editor">
+			<ul class="form" style="margin-top:20px;">
+				<li><span>提现金额：</span><div><input id="inputBalancedub" type="number" required="required" style="display:inline;margin-left:0;"/></div></li>
+				<li class="remind">最高可提现：<span id="balancedub">0</span>元</li>
+			</ul>
+		</div>
+		<div class="submitBox">
+			<button id="buttonSubmit" onclick="withdrawMoney(this);">确认提现</button>
+		</div>
+	</div>
+	<div id="Result" class="Result">
+		<div class="state">
+			<i class="icon-right"></i>
+			<h1>提款申请已提交，请耐心等待！</h1>
+			<p>预计到账时间：1~3个工作日</p>
+		</div>
+		<ul class="form" style="margin-top:20px;">
+			<li class="name">提款人姓名：<span></span></li>
+			<li class="money">提 现 金 额：<span></span>元</li>
+			<li class="account">提 款 账 户：<span></span></li>
+		</ul>
+	</div>
+	<script type="text/javascript">
+		/** 获取用户数据 */
+		var userData = JSON.parse(getCookie("_userCenterInfo"));
+		/**
+		@显示提票
+			state=状态[布尔 true/false]
+			msg=提醒内容[字符串]
+		*/
+		function feedback(state,msg){
+			$("#feedback>i").attr({class:state?"icon-icon_right ok":"icon-delete no"});
+			$("#feedback>div").html(msg);
+			$("#feedback").css({paddingTop:($("#layout_fixedTop").outerHeight()+50)+"px"}).show();
+			$("#withdrawals").hide();
+			$("#tool>a.right").attr({class:"right",href:"./withdrawals.html"}).html("重试").show();
+		}
+
+		function withdrawMoney(ts){
+
+		    if(userData.bankCardList.length==0){
+		        //popText('请先指定用于提现的银行卡');
+				$("#bankList").css({
+					color:'#de1e46',
+					backgroundColor:'#f9cfd8'
+				});
+				return false;
+			}
+            $("#bankList").css({
+                color:'#222',
+                backgroundColor:'#fff'
+            });
+			var inputBalancedub = parseInt($("#inputBalancedub").val());
+			var balancedub=parseInt(userData.balancedub);
+			if(!inputBalancedub){
+				$("#inputBalancedub").val("").attr({placeholder:"请输入要提现的金额"}).parents("li").addClass("no");
+			}else if(inputBalancedub<1){
+				$("#inputBalancedub").val("").attr({placeholder:"请输入大于0的提现金额"}).parents("li").addClass("no");
+			}else if(inputBalancedub>balancedub){
+				$("#inputBalancedub").val("").attr({placeholder:"你没有那么多钱哦"}).parents("li").addClass("no");
+			}else{
+				$(ts).addClass("disable").html("正在提交,请稍候");
+
+				$("#Result>ul.form>li.name>span").html(userData.name);
+				$("#Result>ul.form>li.money>span").html(inputBalancedub);
+				$("#Result>ul.form>li.account>span").html($("#bankList>ul>li.select>.text>dd").text());
+
+				var toData={
+			        command:"withdrawMoney",
+			        bizParams:{
+			        	phone:userData.phone,
+			        	nowMoney:inputBalancedub
+			        }
+			    };
+			    toData.MD5=utf8_md5(configure.secretKey+JSON.stringify(toData.bizParams));
+			    ajax.interactive("POST",toData,"withdrawMoneySuccess","withdrawMoneyError");
+			}
+		}
+		function withdrawMoneySuccess(Data){
+			if(Data.code!="0000"){
+				feedback(false,Data.msg);
+				return;
+			}
+			$("#buttonSubmit").removeClass("disable").html("确认提现");
+			$("#withdrawals").hide();
+			$("#Result").show();
+			console.log(Data);
+		}
+		function withdrawMoneyError(Data){
+			console.log(Data);
+		}
+		//添加银行卡
+		function addBankCard(){
+		    window.open("bankcard_add.html","_self");
+		}
+		/*** 执行 **********************************************************************************/
+		$(function(){
+			/** 编译LESS **********************************************/
+            $.get("../../../../tool/apiY.php", { api: "lessphp",less:"lottery_mob/less/personal/withdrawals.less",css:"lottery_mob/css/personal/withdrawals.css"});
+			//console.log(userData);
+			//初始化设置
+			$("#tool>h1").text("提现");
+			$("#withdrawals,#Result").css({paddingTop:($("#layout_fixedTop").outerHeight()+20)+"px"});
+			$("#feedback").css({paddingTop:($("#layout_fixedTop").outerHeight()+50)+"px"});
+			$("#inputBalancedub").attr({min:1,max:parseInt(userData.balancedub)});
+			$("#balancedub").text(userData.balancedub);
+
+			$("#inputBalancedub").on("focusin",function(){
+				$(this).attr({placeholder:""}).parents("li").removeClass("no")
+			});
+
+			//设置银行卡列表
+			for(var key in userData.bankCardList){
+				var backData = userData.bankCardList[key];
+				if(backData.status==1&&backData.income==2){
+					//console.log(backData);
+					$("#bankList>ul").append('<li'+(key==0?' class="select"':"")+'>\
+						<div class="icon bank-'+backData.shortbank+'"></div>\
+						<dl class="text"><dt>'+backData.cardName+'</dt><dd>'+backData.bankNum.replace(r_kahao, "$1 **** **** $2")+'</dd></dl>\
+					</li>');
+				}
+			}
+			if($("#bankList>ul>li").length<1){
+				$("#bankList>ul").append('<li class="disable" onclick="addBankCard()"> \
+					<div class="icon icon-add "></div>\
+					<dl class="text"><dt>点击添加提现银行卡</dt><dd>请先添加提现银行卡再试</dd></dl>\
+				</li>');
+			}else{
+				$("#bankList>ul").on("click",">li",function(){
+					if($("#bankList>ul>li").length<2){return;}
+					var liH = $("#bankList>ul>li").outerHeight()+parseInt($("#bankList>ul>li").css("margin-top"));
+					if($("#bankList").attr("state")=="open"){
+						$(this).prependTo("#bankList>ul");
+						$("#bankList").attr({state:"close"}).find(">ul").css({height:liH+"px"});
+					}else{
+						$("#bankList").attr({state:"open"}).find(">ul").css({height:(liH*$("#bankList>ul>li").length)+"px"});
+					}
+				});
+			}
+		});
+	</script>
+</body>
+</html>
